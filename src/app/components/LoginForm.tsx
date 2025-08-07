@@ -37,6 +37,7 @@ export default function LoginForm() {
 
       const role = session.role;
       const token = session.accessToken
+      
 
       console.log("User role:", role);
 
@@ -46,7 +47,8 @@ export default function LoginForm() {
           router.push("/auth/signup/admin/admin_cycles");
           break;
         case "manager":
-          router.push("/manager/dashboard");
+          // router.push("/manager/dashboard");
+          router.push("/auth/signup/profile");
           break;
         case "reviewer":
           router.push("/reviewer/dashboard");
@@ -55,6 +57,7 @@ export default function LoginForm() {
         default:
           console.log(token);
           console.log(session.user);
+          console.log(session.user)
           console.log("JWT expiry:", session.expires);
 
           //router.push("/");
