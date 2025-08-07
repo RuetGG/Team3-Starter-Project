@@ -8,7 +8,7 @@ export default function SignInPage() {
       <div className="w-full max-w-sm space-y-6 p-6">
         <div className="flex justify-center">
           <Image
-            src="/images/A2SV.png"
+            src="/images/A2SV-logo1.png"
             alt="A2SV Logo"
             width={192}
             height={48}
@@ -29,7 +29,7 @@ export default function SignInPage() {
             </Link>
             <span className="mx-1 text-black">|</span>
             <Link
-              href="/signup"
+              href="/auth/signup"
               className="text-[#4338ca] hover:text-[#4f46e5] hover:underline"
             >
               Create a new applicant account
