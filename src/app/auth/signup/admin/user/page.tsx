@@ -10,6 +10,7 @@ interface User {
   role: string;
 }
 export default function AdminUser() {
+  const [token,setToken] =  useState<string | null>(null);
   const [users, setUsers] = useState<User[]>([]); // users
   const [editing,setediting] = useState<User | null>(null) 
   const [totalCount, setTotalCount] = useState(0); // total number of users
@@ -19,6 +20,13 @@ export default function AdminUser() {
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState(''); 
   const [roleFilter, setRoleFilter] = useState('All'); // users role
+
+  useEffect(() => { // i am getting the tokenddd
+    const storedToken = localStorage.getItem("token");
+    setToken(storedToken);   
+  }, []);
+
+
 
   const HandleEdit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -84,7 +92,7 @@ export default function AdminUser() {
       return matchesRole && matchesSearch;
   });
   return (
-    <div className="p-8 max-w-5xl mx-auto">
+    <div className="p-8 shadow rounded-2xl max-w-5xl mx-auto">
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-bold">User Management</h1>
