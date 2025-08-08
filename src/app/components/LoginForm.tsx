@@ -36,13 +36,14 @@ export default function LoginForm() {
       }
 
       const role = session.role;
+      const token = session.accessToken
 
       console.log("User role:", role);
 
       // Redirect based on role
       switch (role) {
         case "admin":
-          router.push("/admin/dashboard");
+          router.push("/auth/signup/admin/admin_cycles");
           break;
         case "manager":
           router.push("/manager/dashboard");
@@ -52,11 +53,11 @@ export default function LoginForm() {
           break;
         case "applicant":
         default:
-          console.log(session.accessToken);
+
+          console.log(token);
+
           console.log(session.user);
           console.log("JWT expiry:", session.expires);
-
-          //router.push("/");
           break;
       }
     } else {

@@ -28,7 +28,7 @@ const Home: NextPage = () => {
               </h2>
               <p className="text-sm mt-1 text-[#111827]">
                 Or{" "}
-                <a href="#" className="text-blue-600 hover:underline">
+                <a href="/auth/signin" className="text-blue-600 hover:underline">
                   sign in to your existing account
                 </a>
               </p>
@@ -46,3 +46,4 @@ const Home: NextPage = () => {
 };
 
 export default Home;
+
