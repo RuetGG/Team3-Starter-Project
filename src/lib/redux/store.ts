@@ -2,7 +2,6 @@ import { configureStore } from '@reduxjs/toolkit';
 import { cycleApi } from './api/cycleApi';
 import { profileApi } from './api/profileApi';
 import { applicationListManagerApi } from './api/applicationListManagerApi'
-import { applicationReviewApi } from './api/applicationReviewApi';
 
 
 export const store = configureStore({

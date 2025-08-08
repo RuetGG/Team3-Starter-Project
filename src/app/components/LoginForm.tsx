@@ -55,12 +55,11 @@ export default function LoginForm() {
           break;
         case "applicant":
         default:
-          console.log(token);
-          console.log(session.user);
-          console.log(session.user)
-          console.log("JWT expiry:", session.expires);
 
-          //router.push("/");
+          console.log(token);
+
+          console.log(session.user);
+          console.log("JWT expiry:", session.expires);
           break;
       }
     } else {
