@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getAdminAnalytics } from "../../../../api/admin/getAdminAnalytics";
 import { AnalyticsResponse } from "../../../../types/analytics";
+import Nav from "@app/components/[Nav]";
+import Footer from "@app/components/[Footer]";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
@@ -52,6 +54,7 @@ export default function AdminDashboard() {
 
   return (
     <div className="p-8">
+      <Nav/>
       <h1 className="text-2xl font-bold mb-6">Admin Command Center</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -73,13 +76,14 @@ export default function AdminDashboard() {
         <div className="bg-white p-4 rounded shadow">
           <div className="font-semibold">Manage Users</div>
           <p className="text-sm text-gray-600">Create, edit, and manage user accounts and roles.</p>
-          <a href="#" className="text-indigo-600 text-sm mt-2 inline-block">Go to Users →</a>
+          <a href="/auth/signup/admin/user" className="text-indigo-600 text-sm mt-2 inline-block">Go to Users →</a>
+        {/* add samuel page - user list */}
         </div>
 
         <div className="bg-white p-4 rounded shadow">
           <div className="font-semibold">Manage Cycles</div>
           <p className="text-sm text-gray-600">Create and manage application cycles.</p>
-          <a href="#" className="text-indigo-600 text-sm mt-2 inline-block">Go to Cycles →</a>
+          <a href="/auth/signup/admin/admin_cycles" className="text-indigo-600 text-sm mt-2 inline-block">Go to Cycles →</a>
         </div>
 
         <div className="bg-white p-4 rounded shadow">
@@ -95,7 +99,9 @@ export default function AdminDashboard() {
         <div className="font-semibold">View Analytics</div>
         <p className="text-sm text-gray-600">Explore application data and platform insights.</p>
         <a href="#" className="text-indigo-600 text-sm mt-2 inline-block">Go to Analytics →</a>
+     {/* add lamrots page - analytics */}
       </div>
+      <Footer/>
     </div>
   );
 }
