@@ -17,7 +17,7 @@ export default function AdminUser() {
   const [page, setPage] = useState(1); // page number
   const [limit] = useState(10); // number of users per page
   const [loading, setLoading] = useState(false); // loading
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string>("");
   const [search, setSearch] = useState(''); 
   const [roleFilter, setRoleFilter] = useState('All'); // users role
 
@@ -58,7 +58,7 @@ export default function AdminUser() {
   useEffect(() => {
     const fetchUsers = async () => {
       setLoading(true);
-      setError(null);
+      setError("");
       try {
         const token = localStorage.getItem('token');
         const response = await axios.get(
@@ -76,11 +76,17 @@ export default function AdminUser() {
         } else {
           setError(response.data.message || 'Failed to load users');
         }
-      } catch (err: any) {
-        setError(err.response?.data?.message || err.message || 'Failed to load users');
-      } finally {
-        setLoading(false);
+      } catch (err) {
+      if (typeof err === "string") {
+      setError(err);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("an unexpected error occurred");
       }
+      }finally {
+          setLoading(false);
+        }
     };
     fetchUsers();
   }, [page, limit]);
@@ -113,8 +119,7 @@ export default function AdminUser() {
         <select
           value={roleFilter}
           onChange={(e) => setRoleFilter(e.target.value)}
-          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
+          className="border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="All">All Roles</option>
           <option value="Applicant">Applicant</option>
           <option value="Reviewer">Reviewer</option>
@@ -122,10 +127,8 @@ export default function AdminUser() {
           <option value="Admin">Admin</option>
         </select>
       </div>
-
-      {loading && <p>Loading users...</p>}
+      {loading && <p>loading users...</p>}
       {error && <p className="text-red-600">{error}</p>}
-
       {!loading && !error && (
         <>
           <div className="divide-y border rounded shadow-sm">
