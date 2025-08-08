@@ -44,7 +44,7 @@ export default function LoginForm() {
       // Redirect based on role
       switch (role) {
         case "admin":
-          router.push("/auth/signup/admin/admin_cycles");
+          router.push("auth/signup/admin/dash");
           break;
         case "manager":
           // router.push("/manager/dashboard");
