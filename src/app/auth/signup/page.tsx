@@ -1,4 +1,4 @@
- import { NextPage } from "next";
+import { NextPage } from "next";
 import NavBar from "@app/components/navBarForregister";
 import Footer from "@app/components/footerForRegister";
 import Form from "@app/components/formForregister";
