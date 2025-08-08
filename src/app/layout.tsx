@@ -2,7 +2,7 @@
 import "../styles/globals.css"
 import { Provider } from "react-redux";
 import { store } from '../lib/redux/store'
-
+import { SessionProvider } from "next-auth/react";
 
 export default function RootLayout({
   children,
@@ -11,11 +11,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-        <body>
-      <Provider store={store}>
-          {children}
-      </Provider>
-        </body>
+      <body>
+        <SessionProvider>
+          <Provider store={store}>
+            {children}
+          </Provider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

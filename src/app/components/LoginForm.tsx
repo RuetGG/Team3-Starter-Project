@@ -48,7 +48,7 @@ export default function LoginForm() {
           break;
         case "manager":
           // router.push("/manager/dashboard");
-          router.push("/auth/signup/profile");
+          router.push("/auth/signup/manager");
           break;
         case "reviewer":
           router.push("/reviewer/dashboard");
