@@ -37,16 +37,20 @@ export default function LoginForm() {
 
       const role = session.role;
       const token = session.accessToken
+      
 
       console.log("User role:", role);
 
       // Redirect based on role
       switch (role) {
         case "admin":
-          router.push("/auth/signup/admin/admin_cycles");
+          router.push("/auth/signup/admin/dash");
           break;
         case "manager":
-          router.push("/manager/dashboard");
+          // router.push("/manager/dashboard");
+          router.push("/auth/signup/manager");
+
+        
           break;
         case "reviewer":
           router.push("/reviewer/dashboard");
