@@ -1,9 +1,15 @@
 import LoginForm from "../../components/LoginForm";
 import Link from "next/link";
 import Image from "next/image";
+import Footer from "../../components/footerForRegister";
+import NavBar from "@app/components/navBarForregister";
 
 export default function SignInPage() {
   return (
+    <div className="flex flex-col min-h-screen bg-gray-50">
+   {/* Top Navigation */}
+      
+       <NavBar />
     <main className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
       <div className="w-full max-w-sm space-y-6 p-6">
         <div className="flex justify-center">
@@ -39,5 +45,8 @@ export default function SignInPage() {
         <LoginForm />
       </div>
     </main>
+     {/* Footer */}
+      <Footer />
+      </div>
   );
 }
