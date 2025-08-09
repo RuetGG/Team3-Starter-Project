@@ -1,18 +1,19 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getAdminAnalytics } from "../../../../api/admin/getAdminAnalytics";
-import { AnalyticsResponse } from "../../../../types/analytics";
+import type { AnalyticsResponse } from "../../../../types/analytics";
 
 export default function AdminDashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
 
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
-  const [totalUsers, setTotalUsers] = useState<number>(0);
-  const [activeCycles, setActiveCycles] = useState<number>(0);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [activeCycles, setActiveCycles] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,30 +29,23 @@ export default function AdminDashboard() {
       try {
         const headers = { Authorization: `Bearer ${session.accessToken}` };
 
-        // Analytics
         const analyticsData = await getAdminAnalytics(session.accessToken);
         setAnalytics(analyticsData);
 
-        // Users
         const usersRes = await fetch(
-          "https://a2sv-application-platform-backend-team1.onrender.com/admin/users/?page=1&limit=1",
+          "https://a2sv-application-platform-backend-team3.onrender.com/admin/users/?page=1&limit=1",
           { headers }
         );
         const usersData = await usersRes.json();
-        if (usersData.success) {
-          setTotalUsers(usersData.data.total_count || 0);
-        }
+        if (usersData.success) setTotalUsers(usersData.data.total_count || 0);
 
-        // Cycles
         const cyclesRes = await fetch(
-          "https://a2sv-application-platform-backend-team1.onrender.com/cycles/?page=1&limit=100",
+          "https://a2sv-application-platform-backend-team3.onrender.com/cycles/?page=1&limit=100",
           { headers }
         );
         const cyclesData = await cyclesRes.json();
         if (cyclesData.success) {
-          setActiveCycles(
-            cyclesData.data.cycles.filter((c: any) => c.is_active).length
-          );
+          setActiveCycles(cyclesData.data.cycles.filter((c: any) => c.is_active).length);
         }
       } catch (err) {
         console.error("Fetch failed:", err);
@@ -91,7 +85,10 @@ export default function AdminDashboard() {
         <div className="bg-white p-4 rounded shadow">
           <div className="font-semibold">Manage Users</div>
           <p className="text-sm text-gray-600">Create, edit, and manage user accounts and roles.</p>
-          <a href="#" className="text-indigo-600 text-sm mt-2 inline-block">Go to Users →</a>
+          {/* ✅ real route to the users list */}
+          <Link href="/auth/signup/admin/users" className="text-indigo-600 text-sm mt-2 inline-block">
+            Go to Users →
+          </Link>
         </div>
 
         <div className="bg-white p-4 rounded shadow">

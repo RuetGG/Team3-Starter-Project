@@ -1,10 +1,10 @@
-import { NextAuthOptions } from "next-auth";
+import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
 import { Session, User } from "next-auth";
 import crypto from "crypto";
 
-export const authOptions: NextAuthOptions = {
+export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
@@ -22,7 +22,7 @@ export const authOptions: NextAuthOptions = {
 
         try {
           const res = await fetch(
-            "https://a2sv-application-platform-backend-team1.onrender.com/auth/token/",
+            "https://a2sv-application-platform-backend-team3.onrender.com/auth/token/",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
