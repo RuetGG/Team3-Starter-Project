@@ -1,11 +1,16 @@
-import AdminCyclePage from "./auth/signup/admin/admin_cycles/page";
-import RegistrationPage from "./auth/signup/page";
-import Index from "./Index";
+import Footer from "./components/Footer";
+import Navbar from "./components/Navbar";
+import HomePage from "./index";
 
-export default function Home() {
+function Home() {
   return (
     <>
-      /<Index></Index>
+      <Navbar></Navbar>
+      <HomePage></HomePage>
+      <Footer></Footer>
     </>
   );
 }
+
+export default Home;
+//

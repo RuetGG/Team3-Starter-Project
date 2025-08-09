@@ -1,6 +1,13 @@
+"use client";
+
 import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { useAuth } from "../hooks/useAuth";
 
 function Navbar() {
+  const { isLoggedIn, handleLogout } = useAuth();
+
   return (
     <nav className="shadow-sm">
       <div
@@ -10,9 +17,9 @@ function Navbar() {
           margin: "0 auto",
         }}
       >
-        {/* Navbar Start (Logo + Mobile Menu) */}
+        {/* Navbar Start */}
         <div className="navbar-start">
-          {/* Mobile Menu Dropdown */}
+          {/* Mobile Menu */}
           <div className="dropdown">
             <div tabIndex={0} role="button" className="btn btn-ghost lg:hidden">
               <svg
@@ -25,7 +32,7 @@ function Navbar() {
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  strokeWidth="2"
+                  strokeWidth={2}
                   d="M4 6h16M4 12h8m-8 6h16"
                 />
               </svg>
@@ -34,51 +41,96 @@ function Navbar() {
               tabIndex={0}
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
+              {isLoggedIn && (
+                <li>
+                  <a href="/dashboard">Dashboard</a>
+                </li>
+              )}
               <li>
-                <a href="#journey">The Journey</a>
+                <Link href="/#journey">The Journey</Link>
               </li>
               <li>
-                <a href="#about">About</a>
+                <Link href="/#about">About</Link>
               </li>
               <li>
-                <a href="#alumni">Testimonials</a>
+                <Link href="/#alumni">Testimonials</Link>
               </li>
-              <li>
-                <a className="btn btn-primary mt-2" href="/auth/signin">
-                  Apply Now
-                </a>
-              </li>
+
+              {!isLoggedIn && (
+                <li>
+                  <a className="btn btn-primary mt-2" href="/auth/signin">
+                    Apply Now
+                  </a>
+                </li>
+              )}
+              {isLoggedIn && (
+                <li>
+                  <button
+                    className="btn mt-2"
+                    onClick={handleLogout}
+                    type="button"
+                  >
+                    Logout
+                  </button>
+                </li>
+              )}
             </ul>
           </div>
 
           {/* Logo */}
-          <a className="btn btn-ghost text-xl">
+          <Link className="btn btn-ghost text-xl" href="/">
             <figure>
-              <img src="/images/A2SV-logo1.png" alt="logo" className="h-8" />
+              <Image
+                src="/images/A2SV-logo1.png"
+                alt="logo"
+                width={140}
+                height={32}
+                className="h-8"
+              />
             </figure>
-          </a>
+          </Link>
         </div>
 
-        {/* Navbar Center (Desktop Menu) */}
+        {/* Desktop Menu */}
         <div className="navbar-center hidden lg:flex">
+          {isLoggedIn && (
+            <a className="btn" href="/dashboard">
+              Dashboard
+            </a>
+          )}
+        </div>
+
+        {/* Navbar End */}
+        <div className="navbar-end hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
             <li>
-              <a href="#journey">The Journey</a>
+              <Link href="/#journey">The Journey</Link>
             </li>
             <li>
-              <a href="#about">About</a>
+              <Link href="/#about">About</Link>
             </li>
             <li>
-              <a href="#alumni">Testimonials</a>
+              <Link href="/#alumni">Testimonials</Link>
             </li>
-          </ul>
-        </div>
 
-        {/* Navbar End (Apply Button) */}
-        <div className="navbar-end hidden lg:flex">
-          <a className="btn btn-primary" href="/auth/signin">
-            Apply Now
-          </a>
+            {isLoggedIn ? (
+              <li>
+                <button
+                  className="btn ml-1"
+                  onClick={handleLogout}
+                  type="button"
+                >
+                  Logout
+                </button>
+              </li>
+            ) : (
+              <li>
+                <a className="btn btn-primary" href="/auth/signin">
+                  Apply Now
+                </a>
+              </li>
+            )}
+          </ul>
         </div>
       </div>
     </nav>

@@ -11,7 +11,7 @@ export default function NotFound() {
       <h1 className="text-8xl font-bold text-[#4338ca] mb-2">404</h1>
       <h2 className="text-xl font-bold text-black mb-4">Page Not Found</h2>
       <p className="text-gray-600 text-sm mb-6">
-        Sorry, we can't find the page you're looking for.
+        Sorry, we can&apos;t find the page you&apos;re looking for.
       </p>
       <button
         onClick={() => router.push("/")}

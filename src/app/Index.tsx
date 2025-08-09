@@ -1,14 +1,10 @@
 import Card from "./components/Card";
 import CardJourney from "./components/CardJourney";
-import Footer from "./components/Footer";
-import Navbar from "./components/Navbar";
 import styles from "./Orbit.module.css";
 
-function Index() {
+function HomePage() {
   return (
     <>
-      <Navbar></Navbar>
-      {/* Hero Section */}
       <div className="bg-gray-200">
         <div className="relative w-full">
           <img
@@ -23,7 +19,7 @@ function Index() {
                 Forge Your Future in Tech
               </h1>
               <p className="mb-6 text-base sm:text-lg leading-relaxed">
-                Join an elite community of Africa's brightest minds and get
+                Join an elite community of Africa&apos;s brightest minds and get
                 fast-tracked to a software engineering career
                 <br /> at the world’s leading tech companies.
               </p>
@@ -112,10 +108,10 @@ algorithms, and problem-solving techniques in an intensive 3-month bootcamp."
                 Built by Engineers, for Engineers!
               </h2>
               <p>
-                A2SV is not just a program; it's a community. We're on a mission
-                to identify Africa's most brilliant minds and provide them with
-                the resources, mentorship, and opportunities to solve humanity's
-                greatest challenges.
+                A2SV is not just a program; it&apos;s a community. We&apos;re on
+                a mission to identify Africa&apos;s most brilliant minds and
+                provide them with the resources, mentorship, and opportunities
+                to solve humanity&apos;s greatest challenges.
               </p>
             </div>
             <figure className="lg:w-1/2">
@@ -171,9 +167,8 @@ algorithms, and problem-solving techniques in an intensive 3-month bootcamp."
           </a>
         </div>
       </section>
-      <Footer></Footer>
     </>
   );
 }
 
-export default Index;
+export default HomePage;
