@@ -5,15 +5,18 @@ import CycleCard from "@components/[CycleCard]";
 import PaginationInfo from "@components/[PaginationInfo]";
 import PaginationButton from "@components/[PaginationButton]";
 import { useGetAllCyclesQuery } from "@lib/redux/api/cycleApi";
+import Nav from "@app/components/[Nav]";
+import { useRouter } from "next/navigation"; 
+import Footer from "@app/components/[Footer]";
 
 const Page = () => {
+  const router = useRouter();
   const { data, error, isLoading } = useGetAllCyclesQuery();
+
   console.log("API Base URL:", process.env.NEXT_PUBLIC_API_URL);
-
-console.log("Cycles data:", data);
-console.log("Cycles error:", error);
-console.log("Loading:", isLoading);
-
+  console.log("Cycles data:", data);
+  console.log("Cycles error:", error);
+  console.log("Loading:", isLoading);
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
@@ -31,6 +34,7 @@ console.log("Loading:", isLoading);
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
+      <Nav/>
 
       <main className="flex-1 px-6 py-4">
         <div className="flex items-center mb-6 w-full max-w-[1280px] mx-auto px-4 mt-5 sm:px-0">
@@ -40,6 +44,7 @@ console.log("Loading:", isLoading);
             className="bg-[#4F46E5] text-white hover:bg-[#4338CA] rounded-[6px] font-light
             h-[40px] px-4 sm:px-6 min-w-[30px] sm:min-w-[168px]
             text-sm sm:text-base flex items-center justify-center transition-colors duration-200"
+            onClick={() => router.push("/auth/signup/admin/create-cycle")} 
           >
             <span className="sm:hidden text-2xl leading-none">+</span>
             <span className="hidden sm:inline">Create New Cycle</span>
@@ -67,10 +72,11 @@ console.log("Loading:", isLoading);
                 handlePageChange={(page) => setCurrentPage(page)}
               />
             </div>
+
           </div>
         </div>
       </main>
-
+      <Footer/>
     </div>
   );
 };
