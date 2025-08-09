@@ -1,4 +1,4 @@
-import Card from "@components/Card";
+import Card from "@components/IndexCard";
 import CardJourney from "@components/CardJourney";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";

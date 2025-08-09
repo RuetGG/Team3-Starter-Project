@@ -13,7 +13,7 @@ export default function Form() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const API_BASE_URL = 'https://a2sv-application-platform-backend-team3.onrender.com';
+  const API_BASE_URL = 'https://a2sv-application-platform-backend-team1.onrender.com';
 
   const handleChange = (e) => {
     const { name, value } = e.target;

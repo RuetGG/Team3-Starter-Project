@@ -53,11 +53,14 @@ export default function LoginForm() {
         
           break;
         case "reviewer":
-          router.push("/reviewer/dashboard");
+          // router.push("/reviewer/dashboard");
+          router.push("/auth/signup/reviewer");
           break;
         case "applicant":
-        default:
+          router.push("/auth/signup/applicant")
+          break;
 
+        default:
           console.log(token);
 
           console.log(session.user);
@@ -104,7 +107,7 @@ export default function LoginForm() {
         </label>
 
         {/* Forgot password on the right */}
-        <a href="/forgot-password" className="text-[#4f46e5] hover:underline">
+        <a href="/auth/forgotyourpassword" className="text-[#4f46e5] hover:underline">
           Forgot password?
         </a>
       </div>

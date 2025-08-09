@@ -53,7 +53,7 @@ export default function ForgotPasswordPage() {
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md rounded-lg bg-white p-8 shadow">
         <div className="flex justify-center mb-4">
-          <img src="/logo.svg" alt="Logo" className="h-10" />
+          <img src="/images/A2SV-logo1.png" alt="Logo" className="h-10" />
         </div>
 
         <h1 className="text-center text-2xl font-bold mb-2">
@@ -99,7 +99,7 @@ export default function ForgotPasswordPage() {
         <div className="mt-6 text-center">
           {/* Use Next.js Link for better performance and client-side routing */}
           <Link
-            href="/login"
+            href="/auth/signin"
             className="text-sm text-indigo-600 hover:underline"
           >
             Back to login
