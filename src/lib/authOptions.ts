@@ -1,10 +1,10 @@
-import { AuthOptions } from "next-auth";
+import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { JWT } from "next-auth/jwt";
 import { Session, User } from "next-auth";
 import crypto from "crypto";
 
-export const authOptions: AuthOptions = {
+export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
 
   providers: [

@@ -1,4 +1,3 @@
-// app/admin/dash/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -12,6 +11,8 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
+  const [totalUsers, setTotalUsers] = useState<number>(0);
+  const [activeCycles, setActiveCycles] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -23,32 +24,49 @@ export default function AdminDashboard() {
       return;
     }
 
-    const fetchAnalytics = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAdminAnalytics(session.accessToken);
-        setAnalytics(data);
+        const headers = { Authorization: `Bearer ${session.accessToken}` };
+
+        // Analytics
+        const analyticsData = await getAdminAnalytics(session.accessToken);
+        setAnalytics(analyticsData);
+
+        // Users
+        const usersRes = await fetch(
+          "https://a2sv-application-platform-backend-team1.onrender.com/admin/users/?page=1&limit=1",
+          { headers }
+        );
+        const usersData = await usersRes.json();
+        if (usersData.success) {
+          setTotalUsers(usersData.data.total_count || 0);
+        }
+
+        // Cycles
+        const cyclesRes = await fetch(
+          "https://a2sv-application-platform-backend-team1.onrender.com/cycles/?page=1&limit=100",
+          { headers }
+        );
+        const cyclesData = await cyclesRes.json();
+        if (cyclesData.success) {
+          setActiveCycles(
+            cyclesData.data.cycles.filter((c: any) => c.is_active).length
+          );
+        }
       } catch (err) {
-        console.error("Analytics fetch failed:", err);
-        setError("Unable to load analytics. Please try again later.");
+        console.error("Fetch failed:", err);
+        setError("Unable to load dashboard data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAnalytics();
+    fetchData();
   }, [session, status, router]);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading dashboard...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-10 text-red-600">{error}</div>;
-  }
-
-  if (!analytics?.success) {
-    return <div className="text-center py-10 text-red-600">Failed to load analytics.</div>;
-  }
+  if (loading) return <div className="text-center py-10">Loading dashboard...</div>;
+  if (error) return <div className="text-center py-10 text-red-600">{error}</div>;
+  if (!analytics?.success) return <div className="text-center py-10 text-red-600">Failed to load analytics.</div>;
 
   return (
     <div className="p-8">
@@ -57,7 +75,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-4 rounded shadow">
           <div className="text-sm">Total Users</div>
-          <div className="text-2xl font-bold">125</div>
+          <div className="text-2xl font-bold">{totalUsers}</div>
         </div>
         <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded shadow">
           <div className="text-sm">Total Applicants</div>
@@ -65,7 +83,7 @@ export default function AdminDashboard() {
         </div>
         <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded shadow">
           <div className="text-sm">Active Cycles</div>
-          <div className="text-2xl font-bold">1</div>
+          <div className="text-2xl font-bold">{activeCycles}</div>
         </div>
       </div>
 
