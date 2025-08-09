@@ -1,10 +1,8 @@
-// next.config.js
+// next.config.ts
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  experimental: {
-    
-  },
+	reactStrictMode: true,
 };
 
 export default nextConfig;
