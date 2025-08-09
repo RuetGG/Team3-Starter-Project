@@ -5,7 +5,7 @@ import { Session, User } from "next-auth";
 import crypto from "crypto";
 
 export const authOptions: AuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || crypto.randomBytes(32).toString("hex"),
+  secret: process.env.NEXTAUTH_SECRET,
 
   providers: [
     CredentialsProvider({
@@ -22,7 +22,7 @@ export const authOptions: AuthOptions = {
 
         try {
           const res = await fetch(
-            "https://a2sv-application-platform-backend-team3.onrender.com/auth/token/",
+            "https://a2sv-application-platform-backend-team1.onrender.com/auth/token/",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },
