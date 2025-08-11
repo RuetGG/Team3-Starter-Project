@@ -1,5 +1,5 @@
-import Card from "@components/IndexCard";
-import CardJourney from "@components/CardJourney";
+import Card from "@components/card";
+import CardJourney from "./components/CardJourney";
 import Footer from "./components/Footer";
 import Navbar from "./components/Navbar";
 import styles from "./Orbit.module.css";

@@ -24,20 +24,20 @@ const Home: NextPage = () => {
 							<h2
 								className="text-[24px] sm:text-[30px] leading-[32px] sm:leading-[36px]
                            font-extrabold tracking-normal text-[#111827] max-w-[340px] mx-auto"
-							>
-								Create a new applicant account
-							</h2>
-							<p className="text-sm mt-1 text-[#111827]">
-								Or{" "}
-								<a
-									href="/auth/signin"
-									className="text-blue-600 hover:underline"
-								>
-									sign in to your existing account
-								</a>
-							</p>
-						</div>
-					</div>
+              >
+                Create a new applicant account
+              </h2>
+              <p className="text-sm mt-1 text-[#111827]">
+                Or{" "}
+                <a
+                  href="/auth/signin"
+                  className="text-blue-600 hover:underline"
+                >
+                  sign in to your existing account
+                </a>
+              </p>
+            </div>
+          </div>
 
 					{/* Sign Up Form */}
 					<Form />
