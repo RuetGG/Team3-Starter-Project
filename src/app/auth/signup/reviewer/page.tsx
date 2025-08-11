@@ -71,6 +71,17 @@ export default function Home() {
 
   const currentPageApplicants = filteredApplicants.slice(startIndex, endIndex);
 
+  // Add the required `tag` property here:
+ const taggedApplicants = currentPageApplicants.map((applicant) => ({
+  ...applicant,
+  tag:
+    applicant.status === "New"
+      ? "New" as const
+      : applicant.status === "Under Review"
+      ? "Under Review" as const
+      : "Review Complete" as const,
+}));
+
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
@@ -90,8 +101,7 @@ export default function Home() {
 
           <p className="text-gray-700 mb-4">
             You have <span className="font-semibold">{pendingReviewCount}</span>{" "}
-            application{pendingReviewCount !== 1 && "s"} waiting for your
-            review.
+            application{pendingReviewCount !== 1 && "s"} waiting for your review.
           </p>
 
           <div className="flex justify-between items-center mb-2">
@@ -130,7 +140,7 @@ export default function Home() {
             <>
               <div className="flex justify-center">
                 <div className="w-full max-w-6xl">
-                  <ApplicantList applicants={currentPageApplicants} />
+                  <ApplicantList applicants={taggedApplicants} />
                 </div>
               </div>
 

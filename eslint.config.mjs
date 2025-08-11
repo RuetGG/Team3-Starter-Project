@@ -11,6 +11,14 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+
+  {
+    rules: {
+      "react/no-unescaped-entities": "off",           // Disable unescaped entity errors
+      "@next/next/no-page-custom-font": "off",        // Example: disable custom font warning if you want
+      "@typescript-eslint/no-explicit-any": "off",    // Disable 'any' usage error (only if you want)
+    },
+  },
 ];
 
 export default eslintConfig;

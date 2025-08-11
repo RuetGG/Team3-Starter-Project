@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect, useMemo } from "react";
-import ApplicantList from "../../components/application_list";
-import NavBar from "../../components/reviewer_navBar";
-import Footer from "../../components/reviewer_footer";
-import { getAssignedReviews } from "../../../lib/redux/api/reviwer_dashboad_API";
-import { Review } from "../../types/applicant";
+import ApplicantList from "@components/application_list";
+import NavBar from "@components/reviewer_navBar";
+import Footer from "@components/reviewer_footer";
+import { getAssignedReviews } from "@lib/redux/api/reviwer_dashboad_API";
+import { Review } from "@app/types/applicant";
 
 type FilterStatus = "All" | "New" | "Under Review" | "Complete";
 
@@ -71,6 +71,17 @@ export default function Home() {
 
   const currentPageApplicants = filteredApplicants.slice(startIndex, endIndex);
 
+  // Add the required `tag` property here:
+ const taggedApplicants = currentPageApplicants.map((applicant) => ({
+  ...applicant,
+  tag:
+    applicant.status === "New"
+      ? "New" as const
+      : applicant.status === "Under Review"
+      ? "Under Review" as const
+      : "Review Complete" as const,
+}));
+
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
@@ -90,8 +101,7 @@ export default function Home() {
 
           <p className="text-gray-700 mb-4">
             You have <span className="font-semibold">{pendingReviewCount}</span>{" "}
-            application{pendingReviewCount !== 1 && "s"} waiting for your
-            review.
+            application{pendingReviewCount !== 1 && "s"} waiting for your review.
           </p>
 
           <div className="flex justify-between items-center mb-2">
@@ -130,7 +140,7 @@ export default function Home() {
             <>
               <div className="flex justify-center">
                 <div className="w-full max-w-6xl">
-                  <ApplicantList applicants={currentPageApplicants} />
+                  <ApplicantList applicants={taggedApplicants} />
                 </div>
               </div>
 
