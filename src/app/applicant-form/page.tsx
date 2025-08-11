@@ -2,6 +2,7 @@
 import { useForm, Controller } from "react-hook-form";
 import type { Control } from "react-hook-form";
 import { useState } from "react";
+import { getSession } from 'next-auth/react';
 
 const inputClass =
 	"w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -222,6 +223,7 @@ const HeaderComponent = ({
 );
 
 const ApplicantFormPage = () => {
+	const session = getSession();
 	const [step, setStep] = useState(0);
 	const { control, handleSubmit, trigger, getValues } = useForm<FormValues>({
 		defaultValues: {
@@ -255,12 +257,15 @@ const ApplicantFormPage = () => {
 				formData.append("resume", data.resume[0]);
 			}
 
+			console.log('Session: ', session.accessToken)
 			const response = await fetch(
 				"https://a2sv-application-platform-backend-team3.onrender.com/applications",
 				{
 					method: "POST",
 					body: formData,
-					credentials: "include",
+					headers: {
+						Authorization: `Bearer ${session.accessToken}`
+					}
 				}
 			);
 
