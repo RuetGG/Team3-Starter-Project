@@ -18,6 +18,7 @@ type AuthContextType = {
   setProfile: React.Dispatch<React.SetStateAction<Profile | null>>;
   setAccessToken: React.Dispatch<React.SetStateAction<string | null>>;
   handleLogout: () => void;
+  refreshAccessToken: () => Promise<boolean>;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -54,23 +55,77 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       setProfile(json.data);
+      return true;
     } catch (err) {
       console.error(err);
       setProfile(null);
-      setAccessToken(null); // clear invalid token
+      setAccessToken(null);
+      return false;
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (token && isTokenValid(token)) {
-      setAccessToken(token);
-      fetchProfile(token);
-    } else {
-      setLoading(false);
+  // Refresh access token using refresh token
+  const refreshAccessToken = async (): Promise<boolean> => {
+    const refreshToken = localStorage.getItem("refreshToken");
+    if (!refreshToken) {
+      handleLogout();
+      return false;
     }
+
+    try {
+      const res = await fetch(
+        "https://a2sv-application-platform-backend-team3.onrender.com/auth/token/refresh",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!res.ok) {
+        throw new Error("Failed to refresh token");
+      }
+
+      const json = await res.json();
+      if (json.success && json.data?.access) {
+        localStorage.setItem("accessToken", json.data.access);
+        setAccessToken(json.data.access);
+        // fetch profile again with new token
+        await fetchProfile(json.data.access);
+        return true;
+      } else {
+        throw new Error("Invalid refresh response");
+      }
+    } catch (error) {
+      console.error("Error refreshing access token:", error);
+      handleLogout();
+      return false;
+    }
+  };
+
+  // On mount, check tokens and fetch profile
+  useEffect(() => {
+    (async () => {
+      const token = localStorage.getItem("accessToken");
+      if (token) {
+        if (isTokenValid(token)) {
+          setAccessToken(token);
+          await fetchProfile(token);
+        } else {
+          // token expired - try to refresh
+          const refreshed = await refreshAccessToken();
+          if (!refreshed) {
+            setLoading(false);
+          }
+        }
+      } else {
+        setLoading(false);
+      }
+    })();
   }, []);
 
   const handleLogout = () => {
@@ -78,7 +133,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     localStorage.removeItem("refreshToken");
     setProfile(null);
     setAccessToken(null);
-    window.location.href = "/";
+    window.location.href = "/"; // or use router.push if in Next.js client component
   };
 
   const value: AuthContextType = {
@@ -89,6 +144,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setProfile,
     setAccessToken,
     handleLogout,
+    refreshAccessToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
