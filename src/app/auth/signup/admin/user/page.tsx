@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import ManagerNav from "@app/components/[ManagerNav]";
 import Footer from "@app/components/[Footer]";
 
-const baseUrl = "https://a2sv-application-platform-backend-team1.onrender.com";
+const baseUrl = "https://a2sv-application-platform-backend-team3.onrender.com";
 
 interface User {
   id: string;

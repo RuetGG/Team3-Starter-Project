@@ -7,7 +7,7 @@ import ManagerNav from "@app/components/[ManagerNav]";
 import Footer from "@app/components/[Footer]";
 
 const baseUrl: string =
-  "https://a2sv-application-platform-backend-team1.onrender.com";
+  "https://a2sv-application-platform-backend-team3.onrender.com";
 
 interface User {
   full_name: string;

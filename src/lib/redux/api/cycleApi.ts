@@ -14,14 +14,15 @@ export const cycleApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Cycles"], 
+  tagTypes: ["Cycles"],
   endpoints: (builder) => ({
     getAllCycles: builder.query<AllCycle, void>({
       query: () => `/cycles`,
-      providesTags: ["Cycles"], 
+      providesTags: ["Cycles"],
     }),
     getCycle: builder.query<Cycle, number>({
       query: (id) => `/cycles/${id}`,
+      providesTags: (result, error, id) => [{ type: "Cycles", id }],
     }),
     createCycle: builder.mutation<any, Partial<Cycle> & { token?: string }>({
       query: (body) => ({
@@ -31,11 +32,47 @@ export const cycleApi = createApi({
       }),
       invalidatesTags: ["Cycles"],
     }),
+
+    updateCycleStatus: builder.mutation<any, { id: number; is_active: boolean }>({
+      query: ({ id, is_active }) => ({
+        url: is_active
+          ? `/admin/cycles/${id}/activate/`
+          : `/admin/cycles/${id}/deactivate/`,
+        method: "PATCH",
+      }),
+      async onQueryStarted({ id, is_active }, { dispatch, queryFulfilled }) {
+        
+        const patchResult = dispatch(
+          cycleApi.util.updateQueryData("getCycle", id, (draft) => {
+            if (draft?.data) draft.data.is_active = is_active;
+          })
+        );
+
+        
+        const patchListResult = dispatch(
+          cycleApi.util.updateQueryData("getAllCycles", undefined, (draft) => {
+            if (draft?.data?.cycles) {
+              const cycle = draft.data.cycles.find((c) => c.id === id);
+              if (cycle) cycle.is_active = is_active;
+            }
+          })
+        );
+
+        try {
+          await queryFulfilled;
+        } catch {
+          patchResult.undo();
+          patchListResult.undo();
+        }
+      },
+      
+    }),
   }),
 });
 
 export const {
   useGetCycleQuery,
   useGetAllCyclesQuery,
-  useCreateCycleMutation, 
+  useCreateCycleMutation,
+  useUpdateCycleStatusMutation,
 } = cycleApi;
