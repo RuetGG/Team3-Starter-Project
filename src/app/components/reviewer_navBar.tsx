@@ -52,7 +52,9 @@ const NavBar = () => {
 
         {/* Desktop Navigation - Right */}
         <nav className="hidden md:flex items-center space-x-6 text-sm font-medium text-gray-600">
-          <Link href="#">Your profile</Link>
+          <Link href="#">
+            <span className="text-[#4f46e5] font-semibold">Your Profile</span>
+          </Link>
           <Link href="#">
             <span>{fullName}</span>
           </Link>
@@ -97,9 +99,7 @@ const NavBar = () => {
         <div className="md:hidden px-6 pb-4">
           <nav className="flex flex-col space-y-4 text-sm font-medium text-gray-600">
             <Link href="#">
-              <span className="text-purple-600 font-semibold">
-                Your Profile
-              </span>
+              <span className="text-[#4f46e5]font-semibold">Your Profile</span>
             </Link>
             <Link href="#">
               <span className="relative text-gray-800 font-semibold w-fit">

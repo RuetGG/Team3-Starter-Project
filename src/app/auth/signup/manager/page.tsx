@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 "use client";
 import React from "react";
 import { useGetAllApplicationQuery } from "@lib/redux/api/applicationListManagerApi";
@@ -163,8 +163,5 @@ export default function ManagerDashboardPage() {
       </main>
     </>
   );
-=======
-export default function ManagerSignupPage() {
-  return <div>Admin Signup</div>;
->>>>>>> create-cycle
+
 }
