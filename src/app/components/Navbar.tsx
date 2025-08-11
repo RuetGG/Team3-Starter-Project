@@ -6,7 +6,10 @@ import Image from "next/image";
 import { useAuth } from "../hooks/useAuth";
 
 function Navbar() {
-  const { isLoggedIn, handleLogout } = useAuth();
+  const { isLoggedIn, profile, handleLogout } = useAuth();
+
+  const dashboardLink =
+    profile?.role === "admin" ? "/admin/dashboard" : "/user/dashboard";
 
   return (
     <nav className="shadow-sm">
@@ -42,9 +45,21 @@ function Navbar() {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-[1] mt-3 w-52 p-2 shadow"
             >
               {isLoggedIn && (
-                <li>
-                  <a href="/dashboard">Dashboard</a>
-                </li>
+                <>
+                  <li>
+                    <a href={dashboardLink}>Dashboard</a>
+                  </li>
+                  {profile?.role === "admin" && (
+                    <>
+                      <li>
+                        <Link href="/admin/profile">Your Profile</Link>
+                      </li>
+                      <li>
+                        <Link href="/admin/reviewer">Reviewer Name</Link>
+                      </li>
+                    </>
+                  )}
+                </>
               )}
               <li>
                 <Link href="/#journey">The Journey</Link>
@@ -94,25 +109,34 @@ function Navbar() {
         {/* Desktop Menu */}
         <div className="navbar-center hidden lg:flex">
           {isLoggedIn && (
-            <a className="btn" href="/dashboard">
-              Dashboard
-            </a>
+            <>
+              <a href={dashboardLink}>Dashboard</a>
+              {profile?.role === "admin" && (
+                <>
+                  <Link href="/admin/profile">Your Profile</Link>
+                  <Link href="/admin/reviewer">Reviewer Name</Link>
+                </>
+              )}
+            </>
           )}
         </div>
 
         {/* Navbar End */}
         <div className="navbar-end hidden lg:flex">
           <ul className="menu menu-horizontal px-1">
-            <li>
-              <Link href="/#journey">The Journey</Link>
-            </li>
-            <li>
-              <Link href="/#about">About</Link>
-            </li>
-            <li>
-              <Link href="/#alumni">Testimonials</Link>
-            </li>
-
+            {(!isLoggedIn || profile?.role !== "admin") && (
+              <>
+                <li>
+                  <Link href="/#journey">The Journey</Link>
+                </li>
+                <li>
+                  <Link href="/#about">About</Link>
+                </li>
+                <li>
+                  <Link href="/#alumni">Testimonials</Link>
+                </li>
+              </>
+            )}
             {isLoggedIn ? (
               <li>
                 <button

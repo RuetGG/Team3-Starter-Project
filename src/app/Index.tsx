@@ -1,4 +1,4 @@
-import Card from "./components/Card";
+import ApplicantCard from "./components/card";
 import CardJourney from "./components/CardJourney";
 import styles from "./Orbit.module.css";
 
@@ -77,8 +77,7 @@ function HomePage() {
         <div className="flex flex-wrap flex-row gap-8 justify-center ">
           <CardJourney
             image="images/phase1.png"
-            description="Master data structures,
-algorithms, and problem-solving techniques in an intensive 3-month bootcamp."
+            description="Master data structures, algorithms, and problem-solving techniques in an intensive 3-month bootcamp."
             title="Phase 1: Foundations"
           ></CardJourney>
           <CardJourney
@@ -131,19 +130,19 @@ algorithms, and problem-solving techniques in an intensive 3-month bootcamp."
           Hear from our Alumni
         </h2>
         <div className="flex flex-wrap flex-row gap-8 justify-center">
-          <Card
+          <ApplicantCard
             image="images/abel.png" /* Replace with real images */
             role="Software Engineer, Google"
             name="Abel Tadesse"
             description="A2SV completely changed the trajectory of my career. The training is intense, but the community and the opportunities are unparalleled. I'm now at my dream company, and I owe it all to A2SV."
           />
-          <Card
+          <ApplicantCard
             image="images/bethlehem.png"
             role="Software Engineer, Amazon"
             name="Bethlehem Tadesse"
             description="The problem-solving skills I learned at A2SV are invaluable. The mentors push you to be your best, and you're surrounded by people who are just as passionate as you are."
           />
-          <Card
+          <ApplicantCard
             image="images/caleb.png"
             role="Software Engineer, Palantir"
             name="Caleb Alemayehu"

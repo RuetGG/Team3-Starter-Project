@@ -12,7 +12,7 @@ declare module "next-auth" {
       email: string;
     };
     rememberMe?: boolean;
-    expires: string; // 👈 required by next-auth
+    expires: string; //
   }
 
   interface User {

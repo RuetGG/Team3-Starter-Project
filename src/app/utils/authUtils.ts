@@ -1,17 +1,33 @@
-// utils/authUtils.ts
-import { jwtDecode, JwtPayload } from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
-export function isTokenValid(token: string): boolean {
+type JwtPayload = {
+  exp: number; // expiration time in seconds
+};
+
+export function isLoggedIn(): boolean {
+  const token =
+    localStorage.getItem("accessToken") ||
+    sessionStorage.getItem("accessToken");
+  if (!token) return false;
+
   try {
-    const decoded: JwtPayload = jwtDecode(token);
-    const currentTime = Date.now() / 1000;
-    return decoded.exp! > currentTime;
+    const decoded = jwtDecode<JwtPayload>(token);
+    const now = Date.now() / 1000;
+    return decoded.exp > now;
   } catch {
     return false;
   }
 }
 
+export function getAccessToken(): string | null {
+  return (
+    localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken")
+  );
+}
+
 export function logout() {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
 }

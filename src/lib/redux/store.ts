@@ -1,15 +1,11 @@
-import { configureStore } from '@reduxjs/toolkit';
-import { cycleApi } from './api/cycleApi';
+import { configureStore } from "@reduxjs/toolkit";
+import userReducer from "./userSlice";
 
 export const store = configureStore({
   reducer: {
-    [cycleApi.reducerPath]: cycleApi.reducer,
+    user: userReducer,
   },
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(
-      cycleApi.middleware,
-    ),
-})
+});
 
-export type RootState = ReturnType<typeof store.getState>
-export type AppDispatch = typeof store.dispatch
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;

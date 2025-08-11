@@ -9,7 +9,6 @@ export default function SignUPLayout({
   return (
     <html lang="en">
       <body>
-        <Navbar />
         <main>{children}</main>
         <Footer />
       </body>

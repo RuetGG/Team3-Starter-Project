@@ -5,6 +5,7 @@ import { Session, User } from "next-auth";
 import crypto from "crypto";
 
 export const authOptions: AuthOptions = {
+  // Secret for signing the JWT tokens, fallback to a random generated one
   secret: process.env.NEXTAUTH_SECRET || crypto.randomBytes(32).toString("hex"),
 
   providers: [
@@ -16,9 +17,9 @@ export const authOptions: AuthOptions = {
         rememberMe: { label: "Remember Me", type: "text" },
       },
       async authorize(credentials) {
-        const rememberMe = credentials?.rememberMe === "true";
-
         if (!credentials?.email || !credentials?.password) return null;
+
+        const rememberMe = credentials.rememberMe === "true";
 
         try {
           const res = await fetch(
@@ -34,7 +35,7 @@ export const authOptions: AuthOptions = {
           );
 
           const data = await res.json();
-          console.log("Auth API response:", data); // For debugging
+          console.log("Auth API response:", data);
 
           if (res.ok && data.success && data.data?.access) {
             return {
@@ -62,6 +63,7 @@ export const authOptions: AuthOptions = {
   },
 
   callbacks: {
+    // Called whenever a JWT is created or updated
     async jwt({ token, user }: { token: JWT; user?: User }) {
       if (user) {
         token.accessToken = user.accessToken;
@@ -71,7 +73,7 @@ export const authOptions: AuthOptions = {
         token.rememberMe = user.rememberMe;
         token.exp =
           Math.floor(Date.now() / 1000) +
-          (user.rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60); // 30 days or 1 day
+          (user.rememberMe ? 30 * 24 * 60 * 60 : 24 * 60 * 60); // 30 days if rememberMe else 1 day
       }
 
       const currentTime = Math.floor(Date.now() / 1000);
