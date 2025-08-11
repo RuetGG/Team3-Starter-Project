@@ -29,7 +29,7 @@ const ApplicationAnalytics: NextPage = () => {
           'https://a2sv-application-platform-backend-team1.onrender.com/admin/analytics',
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMTg0NjFkMS03YTE2LTRkYzUtOTliNS0wNmNlMzY4NTYwMDAiLCJleHAiOjE3NTQ3Mjk4OTYsInR5cGUiOiJhY2Nlc3MifQ.Qas688xwGCMW89Zzz6yJaFtUs-9tp_EJIwiaOypxHfA`,
+              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxOWYzMzljOS03ZmIwLTQ3ODAtYjIzMy1hYzU5NzMxYzFmNTciLCJleHAiOjE3NTQ5MjU5NDQsInR5cGUiOiJhY2Nlc3MifQ.SFV2GFui9YQqbphk5kk2XLL1bvkJ_MlzxBmEaQqAODw`,
             },
           }
         );
@@ -100,16 +100,30 @@ const ApplicationAnalytics: NextPage = () => {
   };
 
   const geoData = {
-    labels: Object.keys(analyticsData.country_distribution),
-    datasets: [
-      {
-        label: 'Applicants',
-        data: Object.values(analyticsData.country_distribution),
-        backgroundColor: '#818CF8',
-        maxBarThickness: 40,
+  labels: Object.keys(analyticsData.country_distribution),
+  datasets: [
+    {
+      label: 'Applicants',
+      data: Object.values(analyticsData.country_distribution),
+      backgroundColor: function (context: any) {
+        const chart = context.chart;
+        const { ctx, chartArea } = chart;
+
+        if (!chartArea) return '#818CF8'; // fallback for early renders
+
+        const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+        gradient.addColorStop(0, '#e0e7ff');  
+        gradient.addColorStop(0.3, '#dcdffd'); 
+        gradient.addColorStop(0.6, '#a5b4fc'); 
+        gradient.addColorStop(1, '#818CF8');
+
+
+        return gradient;
       },
-    ],
-  };
+      maxBarThickness: 70,
+    },
+  ],
+};
 
   const geoOptions = {
     responsive: true,
@@ -126,43 +140,37 @@ const ApplicationAnalytics: NextPage = () => {
     <div className="w-full min-h-screen flex flex-col bg-gradient-to-b from-white to-gray-100">
       <Nav />
 
-      <main className="flex-grow max-w-4xl mx-auto px-3 sm:px-6 md:px-10 py-4 sm:py-6">
-        <div className="mb-5">
-          <h1
-            className="text-xl sm:text-2xl md:text-3xl leading-tight font-bold"
-            style={{
-              color: 'var(--color-azure-11, #111827)',
-              fontFamily: 'Font 1',
-              letterSpacing: '0%',
-              verticalAlign: 'middle',
-            }}
-          >
-            Application Analytics
-          </h1>
-          <p className="text-gray-600 text-xs sm:text-sm">Insights for the G7 November Intake</p>
+      <main className="flex-grow w-full py-6 px-4 sm:px-6 lg:px-25">
+      
+        <div className="mb-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Application Analytics</h1>
+          <p className="text-gray-600 text-sm sm:text-base">Insights for the G7 November Intake</p>
         </div>
 
-        <div className="w-full flex flex-col gap-3 mb-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           <StatCard label="Total Applicants" value={totalApplicants} />
           <StatCard label="Acceptance Rate" value={`${acceptanceRate}%`} />
           <StatCard label="Avg. Review Time" value={`${avgReviewTime} Days`} />
         </div>
 
-        <section className="grid grid-cols-1 gap-5 mb-6">
+      
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+         
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Application Funnel</h3>
-            <p className="text-gray-500 text-xs sm:text-sm mb-3">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Application Funnel</h3>
+            <p className="text-gray-500 text-sm mb-3">
               This chart visualizes the applicant's journey from submission to acceptance.
             </p>
-            <div className="h-48 sm:h-60 w-full">
+            <div className="h-60 w-full">
               <Bar data={barData} options={barOptions} />
             </div>
           </div>
 
+        
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">University Distribution</h3>
-            <p className="text-gray-500 text-xs sm:text-sm mb-3">Breakdown of applicants by their university.</p>
-            <div className="h-48 sm:h-60">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">University Distribution</h3>
+            <p className="text-gray-500 text-sm mb-3">Breakdown of applicants by their university.</p>
+            <div className="h-60">
               <Doughnut
                 data={universityData}
                 options={{
@@ -181,10 +189,11 @@ const ApplicationAnalytics: NextPage = () => {
             </div>
           </div>
 
-          <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Geographic Distribution</h3>
-            <p className="text-gray-500 text-xs sm:text-sm mb-3">Shows the number of applicants from each country.</p>
-            <div className="h-40 sm:h-56 w-full">
+       
+          <div className="bg-white p-4 rounded-lg shadow-md lg:col-span-2">
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Geographic Distribution</h3>
+            <p className="text-gray-500 text-sm mb-3">Shows the number of applicants from each country.</p>
+            <div className="h-56 w-full">
               <Bar ref={geoChartRef} data={geoData} options={geoOptions} />
             </div>
           </div>
@@ -196,10 +205,11 @@ const ApplicationAnalytics: NextPage = () => {
   );
 };
 
+
 const StatCard = ({ label, value }: { label: string; value: string | number }) => (
   <div className="bg-white rounded-lg p-4 shadow flex flex-col items-center text-center">
-    <p className="text-xs sm:text-sm text-gray-500">{label}</p>
-    <p className="text-lg sm:text-xl font-semibold text-gray-900">{value}</p>
+    <p className="text-sm text-gray-500">{label}</p>
+    <p className="text-xl font-semibold text-gray-900">{value}</p>
   </div>
 );
 
