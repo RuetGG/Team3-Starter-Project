@@ -1,66 +1,45 @@
-import React from "react";
-import Image from "next/image";
+import React, { ReactNode } from "react";
 
-interface ApplicantCardProps {
-  profileImageUrl?: string;
-  applicantName: string;
-  submissionDate: string;
-  status: "New" | "Under Review" | "Review Complete";
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  name?: string;
+  role?: string;
+  children?: ReactNode;
 }
 
-const statusColorMap = {
-  New: "bg-blue-100 text-blue-800",
-  "Under Review": "bg-yellow-100 text-yellow-800",
-  "Review Complete": "bg-green-100 text-green-800",
-};
-
-const buttonTextMap = {
-  New: "Start Review",
-  "Under Review": "Continue Review",
-  "Review Complete": "View Details",
-};
-
-const ApplicantCard: React.FC<ApplicantCardProps> = ({
-  profileImageUrl = "/images/default-avatar.png",
-  applicantName,
-  submissionDate,
-  status,
-}) => {
+function Card({ title, description, image, name, role, children }: Props) {
   return (
-    <div className="border rounded-lg p-4 shadow-sm bg-white w-full max-w-2xl flex flex-col gap-3">
-      {/* Row 1: Image + Name & Submitted Date */}
-      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-        <Image
-          src={profileImageUrl}
-          alt={`${applicantName} profile`}
-          width={56}
-          height={56}
-          className="w-14 h-14 rounded-full object-cover shadow-md"
-          unoptimized
-        />
-        <div className="text-center sm:text-left">
-          <h2 className="text-lg font-semibold text-gray-800">
-            {applicantName}
-          </h2>
-          <p className="text-sm text-gray-500">Submitted: {submissionDate}</p>
-        </div>
-      </div>
+    <div className="card bg-base-100 max-w-[300px] shadow-md hover:shadow-lg transition-shadow">
+      <div className="card-body text-black">
+        {/* Quote / Main Content */}
+        {description && (
+          <p className="mb-4 text-sm leading-relaxed">{description}</p>
+        )}
+        {children}
 
-      {/* Row 2: Status Tag */}
-      <span
-        className={`inline-block px-3 py-1 text-xs font-medium rounded-full w-fit ${statusColorMap[status]}`}
-      >
-        {status}
-      </span>
-
-      {/* Row 3: Action Button */}
-      <div className="flex justify-center items-center">
-        <button className="bg-[#4338ca] text-white px-6 py-2 rounded-md text-base font-medium hover:bg-[#372e94] transition max-w-[180px] w-full sm:w-auto">
-          {buttonTextMap[status]}
-        </button>
+        {/* User Info */}
+        <ul className="list  rounded-box ">
+          <li className="list-row flex items-center gap-3">
+            {image && (
+              <img
+                className="w-10 h-10 rounded-full object-cover"
+                src={image}
+                alt={name || "Profile"}
+              />
+            )}
+            <div>
+              <div className="font-semibold">{name || "Unknown"}</div>
+              <div className="text-xs uppercase font-semibold opacity-60">
+                {role || "Alumni"}
+              </div>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   );
-};
+}
 
-export default ApplicantCard;
+export default Card;
