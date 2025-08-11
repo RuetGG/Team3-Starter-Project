@@ -1,15 +1,17 @@
 "use client";
+import ManagerNav from "@app/components/[ManagerNav]";
+import Footer from "@app/components/[Footer]";
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useCreateCycleMutation } from "@lib/redux/api/cycleApi"; // ✅ Assuming you have this in your RTK Query API
-import Footer from "@app/components/[Footer]";
+import { useCreateCycleMutation } from "@lib/redux/api/cycleApi"; 
+
 
 export default function CreateCyclePage() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [createCycle] = useCreateCycleMutation(); // ✅ RTK Query mutation hook
+  const [createCycle] = useCreateCycleMutation(); 
 
   const [formData, setFormData] = useState({
     name: "",
@@ -38,8 +40,8 @@ export default function CreateCyclePage() {
         token: session?.accessToken,
       }).unwrap();
 
-      // ✅ Invalidate cycles list so it refetches when user navigates back
-      alert("✅ Cycle created successfully!");
+     
+      alert(" Cycle created successfully!");
       router.push("/auth/signup/admin/admin_cycles");
     } catch (err: any) {
       setError(err.message || "Failed to create cycle");
@@ -50,6 +52,7 @@ export default function CreateCyclePage() {
 
   return (
     <>
+    <ManagerNav />
     <main className="min-h-screen flex flex-col bg-gray-50">
       <div className="flex justify-center items-start py-12">
         <div className="w-full max-w-3xl bg-white shadow-lg rounded-xl p-8">

@@ -16,6 +16,7 @@ export interface AllCycle {
   data: {
     cycles: [
       {
+        status: string;
         id: number;
         name: string;
         start_date: string;

@@ -11,12 +11,11 @@ import Footer from "@app/components/[Footer]";
 
 const Page = () => {
   const router = useRouter();
-  const { data, error, isLoading } = useGetAllCyclesQuery();
 
-  console.log("API Base URL:", process.env.NEXT_PUBLIC_API_URL);
-  console.log("Cycles data:", data);
-  console.log("Cycles error:", error);
-  console.log("Loading:", isLoading);
+ 
+  const { data, error, isLoading } = useGetAllCyclesQuery(undefined, {
+    refetchOnMountOrArgChange: false,
+  });
 
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 6;
