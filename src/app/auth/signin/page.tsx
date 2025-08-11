@@ -6,7 +6,6 @@ import { LockClosedIcon } from "@heroicons/react/20/solid";
 
 import { useAuth } from "@app/hooks/useAuth";
 import Image from "next/image";
-import Link from "next/link";
 import { jwtDecode } from "jwt-decode";
 
 export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL!;
@@ -25,10 +24,8 @@ export default function LoginForm() {
   function isTokenValid(token: string) {
     try {
       const decoded = jwtDecode<JwtPayload>(token);
-      console.log("Decoded token exp:", decoded.exp);
       return decoded.exp > Date.now() / 1000;
-    } catch (e) {
-      console.warn("Token decode failed:", e);
+    } catch {
       return false;
     }
   }
@@ -42,16 +39,12 @@ export default function LoginForm() {
       try {
         const decoded = jwtDecode<{ role?: string }>(token);
         const role = decoded.role?.toLowerCase();
-        console.log("User role from token:", role);
-
         if (role === "admin") {
           router.push("/admin/dashboard");
         } else {
           router.push("/user/dashboard");
         }
-      } catch (e) {
-        console.error("Failed to decode role from token:", e);
-        // fallback
+      } catch {
         router.push("/user/dashboard");
       }
     }
@@ -59,8 +52,6 @@ export default function LoginForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    console.log("Login attempt with email:", email);
 
     if (!email || !password) {
       setError("Both fields are required");
@@ -71,7 +62,6 @@ export default function LoginForm() {
     setLoading(true);
 
     try {
-      // Login request
       const res = await fetch(`${API_BASE_URL}/auth/token`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,13 +69,11 @@ export default function LoginForm() {
       });
 
       const data = await res.json();
-      console.log("Login response:", data);
 
       if (!res.ok || !data.success) {
         throw new Error(data.message || "Invalid email or password");
       }
 
-      // Save tokens — optionally persist longer if "remember me" checked
       if (rememberMe) {
         localStorage.setItem("accessToken", data.data.access);
         localStorage.setItem("refreshToken", data.data.refresh);
@@ -94,7 +82,6 @@ export default function LoginForm() {
         sessionStorage.setItem("refreshToken", data.data.refresh);
       }
 
-      // Fetch profile after login
       const profileRes = await fetch(`${API_BASE_URL}/profile/me`, {
         method: "GET",
         headers: {
@@ -104,7 +91,6 @@ export default function LoginForm() {
       });
 
       const profileJson = await profileRes.json();
-      console.log("Profile fetch response:", profileJson);
 
       if (!profileRes.ok || !profileJson.success) {
         throw new Error(profileJson.message || "Failed to fetch profile");
@@ -112,12 +98,9 @@ export default function LoginForm() {
 
       setProfile(profileJson.data);
 
-      // Redirect based on role (case insensitive)
       const role = profileJson.data.role?.toLowerCase();
-      console.log("Redirecting user role:", role);
       router.push(role === "admin" ? "/admin/dashboard" : "/user/dashboard");
     } catch (err: unknown) {
-      console.error("Login error:", err);
       setError(err instanceof Error ? err.message : "Login failed");
     } finally {
       setLoading(false);
@@ -144,21 +127,6 @@ export default function LoginForm() {
           <h1 className="text-2xl font-bold text-gray-900">
             Sign in to your account
           </h1>
-          <p className="text-sm text-gray-600 mt-2">
-            <Link
-              href="/"
-              className="text-indigo-600 hover:text-indigo-700 hover:underline"
-            >
-              Back to Home
-            </Link>
-            <span className="mx-2 text-gray-400">|</span>
-            <Link
-              href="/auth/signup"
-              className="text-indigo-600 hover:text-indigo-700 hover:underline"
-            >
-              Create a new applicant account
-            </Link>
-          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -197,14 +165,6 @@ export default function LoginForm() {
               />
               <span>Remember me</span>
             </label>
-
-            <Link
-              href="/forgot-password"
-              className="text-[#4f46e5] hover:underline"
-              tabIndex={0}
-            >
-              Forgot password?
-            </Link>
           </div>
 
           <button
