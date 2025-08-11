@@ -35,6 +35,7 @@ export default function NewApplication() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    // Check if any required field is empty
     if (
       !school ||
       !studentId ||
@@ -72,7 +73,6 @@ export default function NewApplication() {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          // Don't set Content-Type here, let the browser handle FormData
         },
         body: formData,
       });
@@ -109,71 +109,71 @@ export default function NewApplication() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
-            placeholder="School"
             value={school}
             onChange={(e) => setSchool(e.target.value)}
+            placeholder="School"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             required
           />
           <input
             type="text"
-            placeholder="Student ID"
             value={studentId}
             onChange={(e) => setStudentId(e.target.value)}
+            placeholder="Student ID"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             required
           />
           <input
             type="text"
-            placeholder="Country"
             value={country}
             onChange={(e) => setCountry(e.target.value)}
+            placeholder="Country"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             required
           />
           <input
             type="text"
-            placeholder="Degree"
             value={degree}
             onChange={(e) => setDegree(e.target.value)}
+            placeholder="Degree"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             required
           />
           <input
             type="text"
-            placeholder="LeetCode Handle"
             value={leetcodeHandle}
             onChange={(e) => setLeetcodeHandle(e.target.value)}
+            placeholder="LeetCode Handle"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             required
           />
           <input
             type="text"
-            placeholder="Codeforces Handle"
             value={codeforcesHandle}
             onChange={(e) => setCodeforcesHandle(e.target.value)}
+            placeholder="Codeforces Handle"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             required
           />
           <textarea
-            placeholder="Why do you want to join A2SV?"
             value={essayWhy}
             onChange={(e) => setEssayWhy(e.target.value)}
+            placeholder="Why do you want to join A2SV?"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             rows={4}
             required
           />
           <textarea
-            placeholder="Tell us about yourself"
             value={essayAbout}
             onChange={(e) => setEssayAbout(e.target.value)}
+            placeholder="Tell us about yourself"
             disabled={loading}
             className="w-full px-4 py-2 border rounded"
             rows={4}
