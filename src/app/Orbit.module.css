@@ -1,0 +1,23 @@
+.marquee {
+  display: flex;
+  padding: 6px;
+  white-space: nowrap;
+  animation: marqueeSlide 15s linear infinite;
+}
+
+@keyframes marqueeSlide {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+.logoGroup {
+  flex-shrink: 0;
+  display: flex;
+  justify-content: space-around;
+  min-width: 100%;
+  gap: 4rem;
+}

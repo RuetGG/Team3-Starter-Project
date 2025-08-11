@@ -9,10 +9,12 @@ declare module "next-auth" {
     refreshToken: string;
     role: string;
     user: {
+      accessToken: any;
+      id: any;
       email: string;
     };
     rememberMe?: boolean;
-    expires: string; // 👈 required by next-auth
+    expires: string; 
   }
 
   interface User {

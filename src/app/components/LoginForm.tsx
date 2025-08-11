@@ -44,23 +44,27 @@ export default function LoginForm() {
       // Redirect based on role
       switch (role) {
         case "admin":
-          router.push("/auth/signup/admin/admin_cycles");
+          router.push("/auth/signup/admin/dash");
           break;
         case "manager":
           // router.push("/manager/dashboard");
-          router.push("/auth/signup/profile");
+          router.push("/auth/signup/manager");
+
+        
           break;
         case "reviewer":
-          router.push("/reviewer/dashboard");
+          // router.push("/reviewer/dashboard");
+          router.push("/auth/signup/reviewer");
           break;
         case "applicant":
+          router.push("/auth/signup/applicant")
+          break;
+
         default:
           console.log(token);
-          console.log(session.user);
-          console.log(session.user)
-          console.log("JWT expiry:", session.expires);
 
-          //router.push("/");
+          console.log(session.user);
+          console.log("JWT expiry:", session.expires);
           break;
       }
     } else {
@@ -103,7 +107,7 @@ export default function LoginForm() {
         </label>
 
         {/* Forgot password on the right */}
-        <a href="/forgot-password" className="text-[#4f46e5] hover:underline">
+        <a href="/auth/forgotyourpassword" className="text-[#4f46e5] hover:underline">
           Forgot password?
         </a>
       </div>
