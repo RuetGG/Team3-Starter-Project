@@ -1,11 +1,14 @@
 'use client';
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
+import { getSession } from "next-auth/react";
+
 const baseUrl = "https://a2sv-application-platform-backend-team3.onrender.com";
+
 interface ApplicantDetails {
   id: string;
   applicant_name: string;
@@ -17,6 +20,7 @@ interface ApplicantDetails {
   essay_about_you: string;
   resume_url: string;
 }
+
 interface ReviewDetails {
   id: string;
   activity_check_notes: string;
@@ -31,7 +35,7 @@ interface APIData {
   review_details: ReviewDetails;
 }
 
-export default function ReviewrDetail() {
+export default function ReviewerDetail() {
   const params = useParams<{ id: string }>();
   const id = params.id;
 
@@ -48,12 +52,22 @@ export default function ReviewrDetail() {
     essay_why_a2sv_score: 0,
     essay_about_you_score: 0,
   });
+
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    setToken(storedToken);
+    async function fetchToken() {
+      const session = await getSession();
+      if (session?.accessToken) {
+        setToken(session.accessToken);
+      } else {
+        setToken(null);
+      }
+    }
+    fetchToken();
   }, []);
+
   useEffect(() => {
     if (!token) return;
+
     async function fetchReview() {
       setLoading(true);
       setFetchError("");
@@ -79,36 +93,39 @@ export default function ReviewrDetail() {
         }
       } finally {
         setLoading(false);
-      }    }
+      }
+    }
 
     fetchReview();
-  }, [token,id]);
- const handleSubmit = async () => {
-  if (!token) {
-    setSubmitError("Authentication token missing. please log in.");
-    return;
-  }
-  setSubmitting(true);
-  setSubmitError("");
-  try {
-    await axios.put(`${baseUrl}/reviews/${id}`, submitData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    alert("Review successfully submitted.");
-  } catch (error) {
-    if (error instanceof Error) {
-      setSubmitError(error.message);
-    } else {
-      setSubmitError("An unexpected error occurred while submitting.");
+  }, [token, id]);
+
+  const handleSubmit = async () => {
+    if (!token) {
+      setSubmitError("Authentication token missing. Please log in.");
+      return;
     }
-  } finally {
-    setSubmitting(false);
-  }
-};
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      await axios.put(`${baseUrl}/reviews/${id}`, submitData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      alert("Review successfully submitted.");
+    } catch (error) {
+      if (error instanceof Error) {
+        setSubmitError(error.message);
+      } else {
+        setSubmitError("An unexpected error occurred while submitting.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <div className="w-full lg:w-5/6 m-auto p-5 flex flex-col gap-5 text-sm text-gray-700">
       <section>
-        <Link href="/" className="flex cursor-pointer items-center gap-1  hover:underline">
+        <Link href="/" className="flex cursor-pointer items-center gap-1 hover:underline">
           <ChevronLeft size={20} /> Back to Dashboard
         </Link>
         <h1 className="text-2xl font-bold mt-4">
@@ -141,12 +158,13 @@ export default function ReviewrDetail() {
               <a
                 href={`https://github.com/`}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="text-blue-700 hover:underline"
               >
                 Github
               </a>
               <a
-                href={reviewData?.applicant_details.leetcode_handle??""}
+                href={reviewData?.applicant_details.leetcode_handle ?? ""}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-700 hover:underline"
@@ -154,7 +172,7 @@ export default function ReviewrDetail() {
                 LeetCode
               </a>
               <a
-                href={reviewData?.applicant_details.codeforces_handle??""}
+                href={reviewData?.applicant_details.codeforces_handle ?? ""}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-blue-700 hover:underline"
@@ -212,14 +230,16 @@ export default function ReviewrDetail() {
               <input
                 id="resume_score"
                 value={submitData.resume_score}
-                 onChange={(e) => {
+                onChange={(e) => {
                   const val = e.target.value;
                   if (val === "" || !isNaN(Number(val))) {
                     setSubmitData({
                       ...submitData,
                       resume_score: val === "" ? 0 : Number(val),
-                    });   }  }}
-                className="shadow  rounded px-2 py-1 focus:outline-0"
+                    });
+                  }
+                }}
+                className="shadow rounded px-2 py-1 focus:outline-0"
               />
             </section>
 
@@ -236,8 +256,10 @@ export default function ReviewrDetail() {
                     setSubmitData({
                       ...submitData,
                       essay_why_a2sv_score: val === "" ? 0 : Number(val),
-                    });   }  }}
-                className="shadow  rounded px-2 py-1 focus:outline-0"
+                    });
+                  }
+                }}
+                className="shadow rounded px-2 py-1 focus:outline-0"
               />
             </section>
             <section className="flex flex-col min-w-[120px]">
@@ -253,8 +275,10 @@ export default function ReviewrDetail() {
                     setSubmitData({
                       ...submitData,
                       essay_about_you_score: val === "" ? 0 : Number(val),
-                    });   }  }}
-                className="shadow  rounded px-2 py-1 focus:outline-0"
+                    });
+                  }
+                }}
+                className="shadow rounded px-2 py-1 focus:outline-0"
               />
             </section>
           </div>
@@ -264,7 +288,8 @@ export default function ReviewrDetail() {
             disabled={submitting || loading}
             className={`bg-blue-700 text-white p-2 rounded w-full sm:w-auto ${
               submitting || loading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-800"
-            }`}>
+            }`}
+          >
             {submitting ? "Saving..." : "Save & Submit Review"}
           </button>
         </section>

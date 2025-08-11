@@ -1,6 +1,5 @@
 import React from "react";
 import Image from "next/image";
-
 interface ApplicantCardProps {
   profileImageUrl?: string;
   applicantName: string;
@@ -55,9 +54,10 @@ const ApplicantCard: React.FC<ApplicantCardProps> = ({
 
       {/* Row 3: Action Button */}
       <div className="flex justify-center items-center">
-        <button className="bg-[#4338ca] text-white px-6 py-2 rounded-md text-base font-medium hover:bg-[#372e94] transition max-w-[180px] w-full sm:w-auto">
+        <a href="../reviewer/reviewer_detail"
+         className="bg-[#4338ca] text-white px-6 py-2 rounded-md text-base font-medium hover:bg-[#372e94] transition max-w-[180px] w-full sm:w-auto">
           {buttonTextMap[status]}
-        </button>
+        </a>
       </div>
     </div>
   );

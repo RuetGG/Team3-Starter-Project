@@ -8,7 +8,7 @@ import { Review } from "@app/types/applicant";
 
 type FilterStatus = "All" | "New" | "Under Review" | "Complete";
 
-export default function Home() {
+export default function Reviewer() {
   const [applicants, setApplicants] = useState<Review[]>([]);
   const [activeTab, setActiveTab] = useState<FilterStatus>("All");
   const [currentPage, setCurrentPage] = useState(1);
