@@ -43,7 +43,9 @@ type AnalyticsData = {
 const ApplicationAnalytics: NextPage = () => {
   const { data: session, status } = useSession();
   const token = session?.accessToken;
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null
+  );
   const geoChartRef = useRef<any>(null);
 
   useEffect(() => {
@@ -52,7 +54,7 @@ const ApplicationAnalytics: NextPage = () => {
     const fetchAnalytics = async () => {
       try {
         const res = await fetch(
-          "https://a2sv-application-platform-backend-team1.onrender.com/admin/analytics",
+          "https://a2sv-application-platform-backend-team3.onrender.com/admin/analytics",
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -89,8 +91,14 @@ const ApplicationAnalytics: NextPage = () => {
   const funnelData = [
     { stage: "Accepted", value: analyticsData.application_funnel.accepted },
     { stage: "Rejected", value: analyticsData.application_funnel.rejected },
-    { stage: "Pending Review", value: analyticsData.application_funnel.pending_review },
-    { stage: "In Progress", value: analyticsData.application_funnel.in_progress },
+    {
+      stage: "Pending Review",
+      value: analyticsData.application_funnel.pending_review,
+    },
+    {
+      stage: "In Progress",
+      value: analyticsData.application_funnel.in_progress,
+    },
   ];
 
   const barData = {
@@ -239,7 +247,13 @@ const ApplicationAnalytics: NextPage = () => {
   );
 };
 
-const StatCard = ({ label, value }: { label: string; value: string | number }) => (
+const StatCard = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | number;
+}) => (
   <div className="bg-white rounded-lg p-4 shadow flex flex-col items-center text-center">
     <p className="text-xs sm:text-sm text-gray-500">{label}</p>
     <p className="text-lg sm:text-xl font-semibold text-gray-900">{value}</p>

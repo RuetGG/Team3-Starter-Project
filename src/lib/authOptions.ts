@@ -22,7 +22,7 @@ export const authOptions: AuthOptions = {
 
         try {
           const res = await fetch(
-            "https://a2sv-application-platform-backend-team1.onrender.com/auth/token/",
+            "https://a2sv-application-platform-backend-team3.onrender.com/auth/token/",
             {
               method: "POST",
               headers: { "Content-Type": "application/json" },

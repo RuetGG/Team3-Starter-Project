@@ -5,7 +5,7 @@ import Image from "next/image";
 import { getSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
-const BASE_URL = "https://a2sv-application-platform-backend-team1.onrender.com";
+const BASE_URL = "https://a2sv-application-platform-backend-team3.onrender.com";
 
 type ApplicationInfo = {
   success: boolean;

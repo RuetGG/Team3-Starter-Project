@@ -1,6 +1,6 @@
 import { getSession } from "next-auth/react";
 
-const BASE_URL = "https://a2sv-application-platform-backend-team1.onrender.com";
+const BASE_URL = "https://a2sv-application-platform-backend-team3.onrender.com";
 
 export async function getAssignedReviews() {
   const session = await getSession();

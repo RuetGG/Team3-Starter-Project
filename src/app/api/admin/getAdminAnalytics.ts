@@ -4,7 +4,7 @@ export const getAdminAnalytics = async (
   token: string
 ): Promise<AnalyticsResponse> => {
   const res = await fetch(
-    "https://a2sv-application-platform-backend-team1.onrender.com/admin/analytics/",
+    "https://a2sv-application-platform-backend-team3.onrender.com/admin/analytics/",
     {
       headers: {
         Authorization: `Bearer ${token}`,

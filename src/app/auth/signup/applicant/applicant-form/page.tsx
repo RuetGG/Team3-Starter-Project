@@ -258,7 +258,7 @@ const ApplicantFormPage = () => {
       }
 
       const response = await fetch(
-        "https://a2sv-application-platform-backend-team1.onrender.com/applications",
+        "https://a2sv-application-platform-backend-team3.onrender.com/applications",
         {
           method: "POST",
           body: formData,
