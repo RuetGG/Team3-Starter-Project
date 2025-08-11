@@ -76,6 +76,43 @@ export default function AdminUsersPage() {
     return matchesRole && matchesSearch;
   });
 
+  const handleDelete = async (userId: string) => {
+    setLoading(true);
+    setError("");
+
+    try {
+      const session = await getSession();
+      const token = session?.accessToken;
+
+      if (!token) {
+        setError("Authentication token not found. Please login again.");
+        return;
+      }
+
+      const res = await axios.delete(`${baseUrl}/admin/users/${userId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (res.data?.success) {
+        alert("User deleted");
+        // Optionally refresh the user list
+        setUsers(users.filter(user => user.id !== userId));
+      } else {
+        setError(res.data?.message || "Failed to delete user");
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.message || err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("An unexpected error occurred");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="p-8 shadow rounded-2xl max-w-6xl mx-auto bg-white">
       <div className="flex justify-between items-center mb-6">
@@ -152,7 +189,7 @@ export default function AdminUsersPage() {
                       <button
                         className="px-4 py-1 text-sm border border-red-600 text-red-600 rounded hover:bg-red-50 transition"
                         disabled={loading}
-                        onClick={() => alert("Delete functionality not implemented")}
+                        onClick={() => handleDelete(user.id)}
                       >
                         Delete
                       </button>

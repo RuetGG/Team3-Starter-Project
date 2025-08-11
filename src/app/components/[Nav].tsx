@@ -31,7 +31,7 @@ const Nav = () => {
           <Link href="/auth/signup/admin/admin_cycles" className={isActive("/auth/signup/admin/admin_cycles")}>
             Cycles
           </Link>
-          <Link href="/analytics" className={isActive("/analytics")}>
+          <Link href="/auth/Analytics" className={isActive("/auth/analytics")}>
             Analytics
           </Link>
         </div>
@@ -66,7 +66,7 @@ const Nav = () => {
           <Link href="/auth/signup/admin/admin_cycles" className={isActive("/auth/signup/admin/admin_cycles")}>
             Cycles
           </Link>
-          <Link href="/analytics" className={isActive("/analytics")}>
+          <Link href="/auth/analytics" className={isActive("/auth/analytics")}>
             Analytics
           </Link>
           <hr className="border-gray-200" />
