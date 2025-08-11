@@ -1,7 +1,7 @@
-// app/admin/dash/page.tsx
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { getAdminAnalytics } from "../../../../api/admin/getAdminAnalytics";
@@ -14,6 +14,8 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [activeCycles, setActiveCycles] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -25,32 +27,42 @@ export default function AdminDashboard() {
       return;
     }
 
-    const fetchAnalytics = async () => {
+    const fetchData = async () => {
       try {
-        const data = await getAdminAnalytics(session.accessToken);
-        setAnalytics(data);
+        const headers = { Authorization: `Bearer ${session.accessToken}` };
+
+        const analyticsData = await getAdminAnalytics(session.accessToken);
+        setAnalytics(analyticsData);
+
+        const usersRes = await fetch(
+          "https://a2sv-application-platform-backend-team3.onrender.com/admin/users/?page=1&limit=1",
+          { headers }
+        );
+        const usersData = await usersRes.json();
+        if (usersData.success) setTotalUsers(usersData.data.total_count || 0);
+
+        const cyclesRes = await fetch(
+          "https://a2sv-application-platform-backend-team3.onrender.com/cycles/?page=1&limit=100",
+          { headers }
+        );
+        const cyclesData = await cyclesRes.json();
+        if (cyclesData.success) {
+          setActiveCycles(cyclesData.data.cycles.filter((c: any) => c.is_active).length);
+        }
       } catch (err) {
-        console.error("Analytics fetch failed:", err);
-        setError("Unable to load analytics. Please try again later.");
+        console.error("Fetch failed:", err);
+        setError("Unable to load dashboard data.");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchAnalytics();
+    fetchData();
   }, [session, status, router]);
 
-  if (loading) {
-    return <div className="text-center py-10">Loading dashboard...</div>;
-  }
-
-  if (error) {
-    return <div className="text-center py-10 text-red-600">{error}</div>;
-  }
-
-  if (!analytics?.success) {
-    return <div className="text-center py-10 text-red-600">Failed to load analytics.</div>;
-  }
+  if (loading) return <div className="text-center py-10">Loading dashboard...</div>;
+  if (error) return <div className="text-center py-10 text-red-600">{error}</div>;
+  if (!analytics?.success) return <div className="text-center py-10 text-red-600">Failed to load analytics.</div>;
 
   return (
     <div className="p-8">
@@ -60,7 +72,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white p-4 rounded shadow">
           <div className="text-sm">Total Users</div>
-          <div className="text-2xl font-bold">125</div>
+          <div className="text-2xl font-bold">{totalUsers}</div>
         </div>
         <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4 rounded shadow">
           <div className="text-sm">Total Applicants</div>
@@ -68,7 +80,7 @@ export default function AdminDashboard() {
         </div>
         <div className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4 rounded shadow">
           <div className="text-sm">Active Cycles</div>
-          <div className="text-2xl font-bold">1</div>
+          <div className="text-2xl font-bold">{activeCycles}</div>
         </div>
       </div>
 
@@ -76,8 +88,10 @@ export default function AdminDashboard() {
         <div className="bg-white p-4 rounded shadow">
           <div className="font-semibold">Manage Users</div>
           <p className="text-sm text-gray-600">Create, edit, and manage user accounts and roles.</p>
-          <a href="/auth/signup/admin/user" className="text-indigo-600 text-sm mt-2 inline-block">Go to Users →</a>
-        {/* add samuel page - user list */}
+          {/* ✅ real route to the users list */}
+          <Link href="/auth/signup/admin/users" className="text-indigo-600 text-sm mt-2 inline-block">
+            Go to Users →
+          </Link>
         </div>
 
         <div className="bg-white p-4 rounded shadow">
