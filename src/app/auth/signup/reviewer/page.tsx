@@ -1,15 +1,17 @@
 "use client";
-import React, { useState, useEffect, useMemo } from "react";
-import ApplicantList from "@components/application_list";
-import NavBar from "@components/reviewer_navBar";
-import Footer from "@components/reviewer_footer";
-import { getAssignedReviews } from "@lib/redux/api/reviwer_dashboad_API";
-import { Review } from "@app/types/applicant";
 
-type FilterStatus = "All" | "New" | "Under Review" | "Complete";
+import React, { useState, useEffect, useMemo } from "react";
+import ApplicantList from "../../../components/application_list";
+import NavBar from "../../../components/reviewer_navBar";
+import Footer from "../../../components/reviewer_footer";
+import { getAssignedReviewsWithTags } from "../../../../lib/redux/api/reviwer_dashboad_API";
+import { Review } from "../../../types/applicant";
+
+type Tag = "New" | "Under Review" | "Review Complete";
+type FilterStatus = "All" | "Under Review" | "Complete";
 
 export default function Home() {
-  const [applicants, setApplicants] = useState<Review[]>([]);
+  const [applicants, setApplicants] = useState<(Review & { tag: Tag })[]>([]);
   const [activeTab, setActiveTab] = useState<FilterStatus>("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(true);
@@ -20,19 +22,10 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await getAssignedReviews();
-        const reviews = response?.data?.reviews;
-
-        if (Array.isArray(reviews)) {
-          setApplicants(reviews);
-        } else {
-          console.error(
-            "Expected array in response.data.reviews, got:",
-            reviews
-          );
-          setApplicants([]);
-          setError("Invalid data format received.");
-        }
+        const taggedApplicants = await getAssignedReviewsWithTags();
+        
+       
+        setApplicants(taggedApplicants);
       } catch (err) {
         console.error("Error fetching applicants:", err);
         setError("Failed to load applications.");
@@ -45,7 +38,7 @@ export default function Home() {
   }, []);
 
   const sortedApplicants = useMemo(() => {
-    return [...(applicants || [])].sort(
+    return [...applicants].sort(
       (a, b) =>
         new Date(b.submission_date).getTime() -
         new Date(a.submission_date).getTime()
@@ -53,14 +46,18 @@ export default function Home() {
   }, [applicants]);
 
   const filteredApplicants = useMemo(() => {
-    if (activeTab === "All") return sortedApplicants;
-    return sortedApplicants.filter(
-      (applicant) => applicant.status === activeTab
-    );
+    switch (activeTab) {
+      case "Under Review":
+        return sortedApplicants.filter((a) => a.tag === "Under Review");
+      case "Complete":
+        return sortedApplicants.filter((a) => a.tag === "Review Complete");
+      default:
+        return sortedApplicants;
+    }
   }, [sortedApplicants, activeTab]);
 
   const pendingReviewCount = applicants.filter(
-    (a) => a.status === "New" || a.status === "Under Review"
+    (a) => a.tag === "New" || a.tag === "Under Review"
   ).length;
 
   const totalApplicants = filteredApplicants.length;
@@ -74,12 +71,95 @@ export default function Home() {
   const handlePageChange = (page: number) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
-    window.scrollTo({ top: 0, behavior: "smooth" }); // Optional: better UX
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   useEffect(() => {
     setCurrentPage(1);
   }, [activeTab]);
+
+  // 🔹 Pagination Component
+  const Pagination = ({
+    currentPage,
+    totalPages,
+    onPageChange,
+  }: {
+    currentPage: number;
+    totalPages: number;
+    onPageChange: (page: number) => void;
+  }) => {
+    const getPages = (): (number | string)[] => {
+      const pages: (number | string)[] = [];
+
+      if (totalPages <= 5) {
+        for (let i = 1; i <= totalPages; i++) pages.push(i);
+      } else {
+        if (currentPage <= 3) {
+          pages.push(1, 2, 3, "...", totalPages);
+        } else if (currentPage >= totalPages - 2) {
+          pages.push(1, "...", totalPages - 2, totalPages - 1, totalPages);
+        } else {
+          pages.push(1, "...", currentPage, "...", totalPages);
+        }
+      }
+
+      return pages;
+    };
+
+    return (
+      <div className="inline-flex border border-gray-300 bg-white divide-x divide-gray-300">
+        {/* Previous */}
+        <button
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+          className={`px-3 py-1 text-sm font-medium ${
+            currentPage === 1
+              ? "text-gray-400 cursor-not-allowed bg-gray-100"
+              : "text-gray-700 hover:bg-gray-200"
+          }`}
+        >
+          &lt;
+        </button>
+
+        {/* Page Numbers */}
+        {getPages().map((page, index) =>
+          page === "..." ? (
+            <span
+              key={`ellipsis-${index}`}
+              className="px-3 py-1 text-sm text-gray-500 select-none"
+            >
+              ...
+            </span>
+          ) : (
+            <button
+              key={page}
+              onClick={() => onPageChange(Number(page))}
+              className={`px-3 py-1 text-sm font-medium ${
+                currentPage === page
+                  ? "bg-gray-100 text-[#4f46e5] font-bold"
+                  : "text-gray-700 hover:bg-gray-200"
+              }`}
+            >
+              {page}
+            </button>
+          )
+        )}
+
+        {/* Next */}
+        <button
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          className={`px-3 py-1 text-sm font-medium ${
+            currentPage === totalPages
+              ? "text-gray-400 cursor-not-allowed bg-gray-100"
+              : "text-gray-700 hover:bg-gray-200"
+          }`}
+        >
+          &gt;
+        </button>
+      </div>
+    );
+  };
 
   return (
     <main className="min-h-screen bg-gray-50">
@@ -140,47 +220,11 @@ export default function Home() {
                   result{totalApplicants !== 1 && "s"}
                 </p>
 
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded-md text-sm font-medium ${
-                      currentPage === 1
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-gray-200 text-black hover:bg-purple-600 hover:text-white"
-                    }`}
-                  >
-                    &lt;
-                  </button>
-
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (page) => (
-                      <button
-                        key={page}
-                        onClick={() => handlePageChange(page)}
-                        className={`px-3 py-1 rounded-md text-sm font-medium ${
-                          currentPage === page
-                            ? "bg-purple-600 text-white"
-                            : "bg-gray-200 text-black hover:bg-purple-600 hover:text-white"
-                        }`}
-                      >
-                        {page}
-                      </button>
-                    )
-                  )}
-
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded-md text-sm font-medium ${
-                      currentPage === totalPages
-                        ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-                        : "bg-gray-200 text-black hover:bg-purple-600 hover:text-white"
-                    }`}
-                  >
-                    &gt;
-                  </button>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onPageChange={handlePageChange}
+                />
               </div>
             </>
           )}
