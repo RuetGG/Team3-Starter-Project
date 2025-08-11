@@ -19,7 +19,6 @@ const Home: NextPage = () => {
 								className="w-[192px] h-[48px] object-contain"
 							/>
 						</div>
-
 						<div className="text-center">
 							<h2
 								className="text-[24px] sm:text-[30px] leading-[32px] sm:leading-[36px]
