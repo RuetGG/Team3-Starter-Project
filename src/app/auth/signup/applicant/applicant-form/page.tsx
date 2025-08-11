@@ -1,8 +1,9 @@
 "use client";
 import { useForm, Controller } from "react-hook-form";
 import type { Control } from "react-hook-form";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 
 const inputClass =
   "w-full p-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-indigo-500";
@@ -176,11 +177,11 @@ const EssayAndResume = ({ control }: { control: Control<FormValues> }) => (
             type="file"
             onChange={(e) => field.onChange(e.target.files)}
             className="block w-full text-sm text-gray-500
-							file:mr-4 file:py-2 file:px-4
-							file:rounded file:border-0
-							file:text-sm file:font-semibold
-							file:bg-gray-50 file:text-gray-700
-							hover:file:bg-gray-100"
+              file:mr-4 file:py-2 file:px-4
+              file:rounded file:border-0
+              file:text-sm file:font-semibold
+              file:bg-gray-50 file:text-gray-700
+              hover:file:bg-gray-100"
           />
           <div className="text-sm text-gray-500 mt-1 italic">
             {field.value?.[0]?.name || "No file chosen"}
@@ -223,7 +224,8 @@ const HeaderComponent = ({
 );
 
 const ApplicantFormPage = () => {
-  const router = useRouter();
+  const { data: session, status } = useSession();
+  const token = session?.accessToken;
   const [step, setStep] = useState(0);
   const { control, handleSubmit, trigger, getValues } = useForm<FormValues>({
     defaultValues: {
@@ -239,6 +241,10 @@ const ApplicantFormPage = () => {
       resume: undefined,
     },
   });
+
+  // useEffect(() => {
+  //   console.log("Session: ", session);
+  // }, [session]);
 
   const onSubmit = async (data: FormValues) => {
     try {
@@ -257,12 +263,15 @@ const ApplicantFormPage = () => {
         formData.append("resume", data.resume[0]);
       }
 
+      console.log("Session: ", session?.accessToken);
       const response = await fetch(
         "https://a2sv-application-platform-backend-team3.onrender.com/applications",
         {
           method: "POST",
           body: formData,
-          credentials: "include",
+          headers: {
+            Authorization: `Bearer ${session?.accessToken}`,
+          },
         }
       );
 
@@ -276,15 +285,9 @@ const ApplicantFormPage = () => {
       const result = await response.json();
       console.log("Success:", result);
       alert("Application submitted successfully!");
-      router.push("auth/signup/applicant");
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error("Submission error:", error.message);
-        alert(`An unexpected error occurred: ${error.message}`);
-      } else {
-        console.error("Submission error:", error);
-        alert("An unexpected error occurred.");
-      }
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert("An unexpected error occurred.");
     }
   };
 
@@ -296,7 +299,7 @@ const ApplicantFormPage = () => {
   const goBack = () => setStep((prev) => Math.max(0, prev - 1));
 
   return (
-    <main className="flex flex-col bg-gray-100 items-center min-h-screen p-4">
+    <main className="flex flex-col text-black bg-gray-100 items-center min-h-screen p-4">
       <section className="bg-white w-full max-w-2xl rounded-lg shadow-md p-6">
         <h1 className="text-2xl font-bold text-center">Application Form</h1>
 
