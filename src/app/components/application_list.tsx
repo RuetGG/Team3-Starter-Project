@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import ApplicantCard from "./card";
+import ApplicantCard from "@components/rCard";
 import { Review } from "../types/applicant";
 
 
@@ -33,13 +33,10 @@ const ApplicantList: React.FC<ApplicantListProps> = ({ applicants }) => {
         <ApplicantCard
           key={applicant.application_id}
           applicantName={applicant.applicant_name}
-          submissionDate={new Date(
-            applicant.submission_date
-          ).toLocaleDateString()}
-          status={statusMap(applicant.status)}
-          profileImageUrl={
-            applicant.profile_picture_url || "/images/default-avatar.png"
-          }
+          submissionDate={new Date(applicant.submission_date).toLocaleDateString()}
+          status={statusMap(applicant.status)} // Ensure this matches the prop name
+          profileImageUrl={applicant.profile_picture_url || "/images/default-avatar.png"}
+          applicationId={applicant.application_id} // Ensure this is included
         />
       ))}
     </div>
