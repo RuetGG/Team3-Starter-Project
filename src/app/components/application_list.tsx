@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import ApplicantCard from "./rcard";
+import ApplicantCard from "./rCard";
 
 
 import { Review } from "../types/applicant";
