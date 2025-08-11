@@ -92,7 +92,6 @@ export default function AdminUserForm() {
           }}
           className="grid grid-cols-1 md:grid-cols-2 gap-8"
         >
-          
           <div className="flex flex-col">
             <label htmlFor="name" className="mb-2 font-semibold text-gray-600">
               Full Name
@@ -191,7 +190,7 @@ export default function AdminUserForm() {
         {error && (
           <p className="mt-6 text-center text-red-600 font-semibold">{error}</p>
         )}
-        <Footer/>
+        <Footer />
       </div>
     </>
   );

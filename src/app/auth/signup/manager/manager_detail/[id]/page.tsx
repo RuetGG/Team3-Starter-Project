@@ -3,10 +3,11 @@
 import React, { useState } from "react";
 import {
   useGetApplicationQuery,
+  useUpdateAssignedReviewerMutation,
   useUpdateStatusMutation,
 } from "@lib/redux/api/applicationListManagerApi";
 import BacktoDashNav from "@components/[BacktoDashNav]";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import ActionDropdown from "@app/components/ActionDropdown";
 
 const Page = () => {
@@ -14,10 +15,22 @@ const Page = () => {
   const params = useParams();
   const id = String(params.id);
 
-  const { data, error, isLoading, refetch } = useGetApplicationQuery(id);
+  const searchParams = useSearchParams();
+  const reviewerNameFromQuery =
+    searchParams.get("reviewerName") || "Not assigned";
+
+  const { data, error, isLoading } = useGetApplicationQuery(id);
   const [updateStatus, { isLoading: isUpdating }] = useUpdateStatusMutation();
+  const [updateAssignedReviewer, { isLoading: isAssigning }] =
+    useUpdateAssignedReviewerMutation();
 
   const [statusUpdating, setStatusUpdating] = useState(false);
+  const [assignedReviewerName, setAssignedReviewerName] = useState<string>(
+    reviewerNameFromQuery
+  );
+  const [selectedReviewerId, setSelectedReviewerId] = useState<string | null>(
+    null
+  );
 
   if (isLoading) return <p className="p-4">Loading...</p>;
   if (error)
@@ -38,11 +51,28 @@ const Page = () => {
       setStatusUpdating(true);
       await updateStatus({ applicationId: id, finalStatus }).unwrap();
       setStatusUpdating(false);
-      alert(`Status updated to ${finalStatus}`);
-      router.push("/auth/signup/manager"); // <-- navigate back to list page
-    } catch (err) {
+      localStorage.setItem("dashboardNeedsRefresh", "true");
+      router.push("/auth/signup/manager");
+    } catch {
       setStatusUpdating(false);
       alert("Failed to update the status");
+    }
+  };
+
+  const handleConfirm = async () => {
+    if (!selectedReviewerId) {
+      alert("Please select a reviewer first");
+      return;
+    }
+    try {
+      await updateAssignedReviewer({
+        applicationId: id,
+        reviewerId: selectedReviewerId,
+      }).unwrap();
+      alert("Reviewer assigned successfully");
+      localStorage.setItem("dashboardNeedsRefresh", "true");
+    } catch {
+      alert("Failed to assign reviewer");
     }
   };
 
@@ -181,23 +211,34 @@ const Page = () => {
             </div>
           </div>
 
-          {/* Right Section: Actions */}
           <div className="space-y-6">
             <div className="p-6 rounded-lg bg-white shadow-2xl space-y-6 h-fit">
               <h3 className="text-lg font-semibold">Manager Actions</h3>
 
               <div>
-                <p className="text-sm text-gray-500 mb-1">Assign Reviewer</p>
+                <p className="text-sm text-gray-500 mb-1">
+                  Assigned Reviewer
+                  <br />
+                  <div className="bg-gray-300 w-[150px] text-center mt-2 mb-4 rounded">
+                    <span className="text-black font-medium">
+                      {assignedReviewerName || "Not Assigned"}
+                    </span>
+                  </div>
+                </p>
+
                 <ActionDropdown
                   applicationId={id}
-                  onAssigned={() => refetch()}
-    
+                  onAssigned={(reviewerId, reviewerName) => {
+                    setSelectedReviewerId(reviewerId);
+                    setAssignedReviewerName(reviewerName ?? "Not Assigned");
+                  }}
                 />
               </div>
 
               <button
-                disabled={statusUpdating || isUpdating}
+                disabled={statusUpdating || isUpdating || isAssigning}
                 className="w-full bg-[#4F46E5] text-white hover:bg-[#4338CA] rounded-md px-6 py-2 text-sm font-medium"
+                onClick={handleConfirm}
               >
                 Confirm
               </button>

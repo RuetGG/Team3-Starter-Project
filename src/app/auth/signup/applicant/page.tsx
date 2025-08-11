@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 const BASE_URL = "https://a2sv-application-platform-backend-team1.onrender.com";
 
@@ -46,9 +47,7 @@ async function fetchMyApplicationInfo(): Promise<ApplicationInfo> {
           message: "No application found.",
         };
       }
-    } catch {
-      // ignore parse error
-    }
+    } catch {}
     throw new Error(
       `Failed to fetch application info: ${res.status} ${JSON.stringify(data)}`
     );
@@ -99,6 +98,7 @@ const ApplicationPage: React.FC = () => {
   const [appInfo, setAppInfo] = useState<ApplicationInfo | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
     fetchMyApplicationInfo()
@@ -107,13 +107,22 @@ const ApplicationPage: React.FC = () => {
         setLoading(false);
       })
       .catch((err) => {
+        if (
+          err.message.includes("Failed to fetch application info: 404") &&
+          err.message.includes('"error_code":"NOT_FOUND"')
+        ) {
+          router.push("/auth/signup/applicant/applicant-welcome");
+          return;
+        }
         setError(err.message || "Failed to fetch application info");
         setLoading(false);
       });
-  }, []);
+  }, [router]);
 
   if (loading)
-    return <p className="text-center mt-12">Loading your application info...</p>;
+    return (
+      <p className="text-center mt-12">Loading your application info...</p>
+    );
   if (error)
     return <p className="text-red-600 text-center mt-12">Error: {error}</p>;
 
@@ -137,9 +146,10 @@ const ApplicationPage: React.FC = () => {
     );
   }
 
-  const formattedDate = new Date(
-    appInfo.data.submitted_at
-  ).toLocaleDateString("en-US", { year: "numeric", month: "long", day: "2-digit" });
+  const formattedDate = new Date(appInfo.data.submitted_at).toLocaleDateString(
+    "en-US",
+    { year: "numeric", month: "long", day: "2-digit" }
+  );
 
   function getStageDetails(stage: string) {
     const status = appInfo?.data?.status;
@@ -277,16 +287,19 @@ const ApplicationPage: React.FC = () => {
             <section className="bg-white rounded-lg shadow p-6">
               <h5 className="font-semibold mb-4">Important Updates</h5>
               <p className="text-gray-700">
-                There are no new updates at this time. We will notify you by email
-                when your application status changes.
+                There are no new updates at this time. We will notify you by
+                email when your application status changes.
               </p>
             </section>
 
             <section className="bg-indigo-600 text-white rounded-lg shadow p-6">
-              <h5 className="font-semibold mb-3">Get Ready for the Interview!</h5>
+              <h5 className="font-semibold mb-3">
+                Get Ready for the Interview!
+              </h5>
               <p className="mb-2">
                 While you wait, it's a great time to prepare. Practice your
-                problem-solving skills on platforms like LeviCode and Codeforests.
+                problem-solving skills on platforms like LeviCode and
+                Codeforests.
               </p>
               <a href="#" className="font-medium hover:underline inline-block">
                 Read our interview prep guide →

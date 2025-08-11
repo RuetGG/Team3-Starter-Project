@@ -1,6 +1,8 @@
 import { AnalyticsResponse } from "./../../types/analytics";
 
-export const getAdminAnalytics = async (token: string): Promise<AnalyticsResponse> => {
+export const getAdminAnalytics = async (
+  token: string
+): Promise<AnalyticsResponse> => {
   const res = await fetch(
     "https://a2sv-application-platform-backend-team1.onrender.com/admin/analytics/",
     {

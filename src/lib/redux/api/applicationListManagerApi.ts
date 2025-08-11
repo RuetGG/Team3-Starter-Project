@@ -24,6 +24,7 @@ export const applicationListManagerApi = createApi({
     getReviewer: builder.query<AvailableReviewer, void>({
       query: () => `/manager/applications/available-reviewers/`,
     }),
+    
     updateAssignedReviewer: builder.mutation<Application, { applicationId: string; reviewerId: string }>({
       query: ({ applicationId, reviewerId }) => ({
         url: `/manager/applications/${applicationId}/assign/`,

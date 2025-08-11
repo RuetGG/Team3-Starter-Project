@@ -7,7 +7,6 @@ export type AllApplication = {
       applicant_name: string;
       assigned_reviewer_name?: string;
       status: string;
-      submitted_at: string;
     }[];
     total_count: number;
     page: number;

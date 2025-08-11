@@ -1,8 +1,7 @@
 "use client";
-import React from "react";
-import { useGetAllApplicationQuery } from "@lib/redux/api/applicationListManagerApi";
+import React, { useEffect } from "react";
+import { useGetAllApplicationQuery, useGetApplicationQuery } from "@lib/redux/api/applicationListManagerApi";
 import StatCard from "@components/StatCard";
-import type { AllApplication } from "@lib/redux/types/applicationListManager";
 import ManagerNav from "@app/components/[ManagerNav]";
 import ActionDropdown from "@app/components/ActionDropdown";
 import { useRouter } from "next/navigation";
@@ -16,6 +15,8 @@ function formatStatus(status: string) {
       };
     case "under review":
       return { label: "Under Review", color: "bg-yellow-100 text-yellow-800" };
+    case "in_progress":
+      return { label: "In Progress", color: "bg-gray-100 text-gray-800" };
     case "accepted":
       return { label: "Accepted", color: "bg-green-100 text-green-800" };
     case "submitted":
@@ -37,19 +38,27 @@ function formatStatus(status: string) {
 
 export default function ManagerDashboardPage() {
   const router = useRouter();
-
   const { data, isLoading, error, refetch } = useGetAllApplicationQuery();
+
+  useEffect(() => {
+    if (localStorage.getItem("dashboardNeedsRefresh") === "true") {
+      refetch();
+      localStorage.removeItem("dashboardNeedsRefresh");
+    }
+  }, [refetch]);
 
   if (isLoading) return <p className="p-4">Loading...</p>;
   if (error || !data)
     return <p className="p-4 text-red-500">Failed to load applications</p>;
 
-  const applications: AllApplication["data"]["applications"] =
-    data.data.applications;
+  const applications = data.data.applications;
 
   const totalApplications = data.data.total_count;
   const underReview = applications.filter(
-    (app) => app.status === "Under Review" || app.status === "pending_review"
+    (app) => app.status === "under_review"
+  ).length;
+  const inProgress = applications.filter(
+    (app) => app.status === "in_progress"
   ).length;
   const interviewStage = applications.filter(
     (app) => app.status === "interview_stage"
@@ -61,12 +70,19 @@ export default function ManagerDashboardPage() {
     (app) => app.status === "rejected"
   ).length;
 
+  // Group applications by assigned_reviewer_name and count
+  const reviewerCounts: Record<string, number> = {};
+  applications.forEach((app) => {
+    const reviewerName = app.assigned_reviewer_name || "Unassigned";
+    reviewerCounts[reviewerName] = (reviewerCounts[reviewerName] || 0) + 1;
+  });
+  console.log(applications);
+
   return (
     <>
       <ManagerNav />
 
       <main className="min-h-screen bg-gray-100 px-8 py-10">
-        {/* Top Navigation */}
         <div className="flex justify-between items-center border-b border-gray-300 pb-4 mb-8 max-w-[1280px] mx-auto">
           <h1 className="text-2xl font-semibold text-gray-900">
             Manager Dashboard
@@ -84,6 +100,7 @@ export default function ManagerDashboardPage() {
         </div>
 
         <div className="max-w-[1280px] mx-auto grid grid-cols-3 gap-x-32">
+          {/* Applications Table */}
           <div className="col-span-2 bg-white shadow-xl rounded-xl p-6">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-lg font-semibold text-gray-800">
@@ -102,8 +119,7 @@ export default function ManagerDashboardPage() {
               <thead className="text-gray-600 border-b border-gray-300">
                 <tr>
                   <th className="text-left py-3">Applicant</th>
-                  <th className="text-left py-3">Submitted</th>{" "}
-                  {/* Static date as placeholder */}
+                  <th className="text-left py-3">Submitted</th>
                   <th className="text-left py-3">Status</th>
                   <th className="text-left py-3">Reviewer</th>
                   <th className="text-left py-3">Action</th>
@@ -112,18 +128,27 @@ export default function ManagerDashboardPage() {
               <tbody>
                 {applications.map((app) => {
                   const { label, color } = formatStatus(app.status);
+                 
                   return (
                     <tr
                       key={app.id}
                       onClick={() =>
                         router.push(
-                          `/auth/signup/manager/manager_detail/${app.id}`
+                          `/auth/signup/manager/manager_detail/${
+                            app.id
+                          }?reviewerName=${encodeURIComponent(
+                            app.assigned_reviewer_name || ""
+                          )}`
                         )
                       }
-                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                      className="border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer"
                     >
                       <td className="py-3">{app.applicant_name}</td>
-                      <td className="py-3">Oct 25, 2023</td> {/* static date */}
+                      <td className="py-3">
+                        {/* static data */}
+                        Aug,6,2025
+                        
+                      </td>{" "}
                       <td className="py-3">
                         <span
                           className={`inline-block px-2 py-1 rounded text-xs font-semibold ${color}`}
@@ -134,11 +159,10 @@ export default function ManagerDashboardPage() {
                       <td className="py-3">
                         {app.assigned_reviewer_name || "Not Assigned"}
                       </td>
-                      <td className="py-3">
+                      <td className="py-3" onClick={(e) => e.stopPropagation()}>
                         <ActionDropdown
                           applicationId={app.id.toString()}
                           onAssigned={() => refetch()}
-                          
                         />
                       </td>
                     </tr>
@@ -148,15 +172,22 @@ export default function ManagerDashboardPage() {
             </table>
           </div>
 
-          {/* Team Performance */}
           <div className="bg-white shadow-xl rounded-xl p-6">
-            {/* Add your team performance content here */}
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               Team Performance
             </h2>
-            <p className="text-gray-600">
-              Performance charts and stats will be displayed here.
-            </p>
+
+            <div className="space-y-3">
+              {Object.entries(reviewerCounts).map(([reviewerName, count]) => (
+                <div
+                  key={reviewerName}
+                  className="flex justify-between items-center border-b border-gray-200 py-4"
+                >
+                  <h6 className="font-medium text-gray-700">{reviewerName}</h6>
+                  <p className="text-gray-600">{count} assigned applications</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </main>

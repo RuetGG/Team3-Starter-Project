@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link"; // Import Link for client-side navigation
+import Link from "next/link";
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ export default function ForgotPasswordPage() {
     try {
       const res = await fetch(
         // The API endpoint was corrected from `/api/forgot-password` to `/api/auth/forgot-password`
-        "https://a2sv-application-platform-backend-team3.onrender.com/api/auth/forgot-password",
+        "https://a2sv-application-platform-backend-team1.onrender.com/api/auth/forgot-password",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

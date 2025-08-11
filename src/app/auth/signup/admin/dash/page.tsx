@@ -98,8 +98,7 @@ export default function AdminDashboard() {
       <div className="bg-white p-4 rounded shadow">
         <div className="font-semibold">View Analytics</div>
         <p className="text-sm text-gray-600">Explore application data and platform insights.</p>
-        <a href="#" className="text-indigo-600 text-sm mt-2 inline-block">Go to Analytics →</a>
-     {/* add lamrots page - analytics */}
+        <a href="/auth/Analytics" className="text-indigo-600 text-sm mt-2 inline-block">Go to Analytics →</a>
       </div>
       <Footer/>
     </div>

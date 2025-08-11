@@ -1,10 +1,11 @@
-'use client';
+"use client";
 
-import { useEffect, useRef, useState } from 'react';
-import { NextPage } from 'next';
-import { Bar, Doughnut } from 'react-chartjs-2';
-import Nav from './navbar';
-import Footer from './footer';
+import { useEffect, useRef, useState } from "react";
+import { NextPage } from "next";
+import { Bar, Doughnut } from "react-chartjs-2";
+import Nav from "./navbar";
+import Footer from "./footer";
+import { useSession } from "next-auth/react";
 
 import {
   Chart as ChartJS,
@@ -14,22 +15,47 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
-} from 'chart.js';
+} from "chart.js";
 
-ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
+);
+
+type AnalyticsData = {
+  total_applicants: number;
+  acceptance_rate: number;
+  average_review_time_days: number;
+  application_funnel: {
+    accepted: number;
+    rejected: number;
+    pending_review: number;
+    in_progress: number;
+  };
+  school_distribution: Record<string, number>;
+  country_distribution: Record<string, number>;
+};
 
 const ApplicationAnalytics: NextPage = () => {
-  const [analyticsData, setAnalyticsData] = useState<any>(null);
-  const geoChartRef = useRef(null);
+  const { data: session, status } = useSession();
+  const token = session?.accessToken;
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const geoChartRef = useRef<any>(null);
 
   useEffect(() => {
+    if (!token) return; // Wait for token to be available
+
     const fetchAnalytics = async () => {
       try {
         const res = await fetch(
-          'https://a2sv-application-platform-backend-team1.onrender.com/admin/analytics',
+          "https://a2sv-application-platform-backend-team1.onrender.com/admin/analytics",
           {
             headers: {
-              Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJiMTg0NjFkMS03YTE2LTRkYzUtOTliNS0wNmNlMzY4NTYwMDAiLCJleHAiOjE3NTQ3Mjk4OTYsInR5cGUiOiJhY2Nlc3MifQ.Qas688xwGCMW89Zzz6yJaFtUs-9tp_EJIwiaOypxHfA`,
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -38,15 +64,19 @@ const ApplicationAnalytics: NextPage = () => {
         if (json.success) {
           setAnalyticsData(json.data);
         } else {
-          console.error('Analytics Fetch Error:', json);
+          console.error("Analytics Fetch Error:", json);
         }
       } catch (err) {
-        console.error('Failed to fetch analytics:', err);
+        console.error("Failed to fetch analytics:", err);
       }
     };
 
     fetchAnalytics();
-  }, []);
+  }, [token]);
+
+  if (status === "loading") {
+    return <div className="p-6 text-center">Loading session...</div>;
+  }
 
   if (!analyticsData) {
     return <div className="p-6 text-center">Loading analytics...</div>;
@@ -57,26 +87,26 @@ const ApplicationAnalytics: NextPage = () => {
   const avgReviewTime = analyticsData.average_review_time_days;
 
   const funnelData = [
-    { stage: 'Accepted', value: analyticsData.application_funnel.accepted },
-    { stage: 'Rejected', value: analyticsData.application_funnel.rejected },
-    { stage: 'Pending Review', value: analyticsData.application_funnel.pending_review },
-    { stage: 'In Progress', value: analyticsData.application_funnel.in_progress },
+    { stage: "Accepted", value: analyticsData.application_funnel.accepted },
+    { stage: "Rejected", value: analyticsData.application_funnel.rejected },
+    { stage: "Pending Review", value: analyticsData.application_funnel.pending_review },
+    { stage: "In Progress", value: analyticsData.application_funnel.in_progress },
   ];
 
   const barData = {
     labels: funnelData.map((item) => item.stage),
     datasets: [
       {
-        label: 'Applicants',
+        label: "Applicants",
         data: funnelData.map((item) => item.value),
-        backgroundColor: '#818CF8',
+        backgroundColor: "#818CF8",
         borderRadius: 4,
       },
     ],
   };
 
   const barOptions = {
-    indexAxis: 'y' as const,
+    indexAxis: "y" as const,
     scales: {
       x: { beginAtZero: true, ticks: { maxTicksLimit: 5, font: { size: 10 } } },
       y: { beginAtZero: true, ticks: { font: { size: 10 } } },
@@ -94,7 +124,7 @@ const ApplicationAnalytics: NextPage = () => {
     datasets: [
       {
         data: Object.values(analyticsData.school_distribution),
-        backgroundColor: ['#4F46E5', '#6366F1', '#A5B4FC'],
+        backgroundColor: ["#4F46E5", "#6366F1", "#A5B4FC"],
       },
     ],
   };
@@ -103,9 +133,9 @@ const ApplicationAnalytics: NextPage = () => {
     labels: Object.keys(analyticsData.country_distribution),
     datasets: [
       {
-        label: 'Applicants',
+        label: "Applicants",
         data: Object.values(analyticsData.country_distribution),
-        backgroundColor: '#818CF8',
+        backgroundColor: "#818CF8",
         maxBarThickness: 40,
       },
     ],
@@ -131,15 +161,17 @@ const ApplicationAnalytics: NextPage = () => {
           <h1
             className="text-xl sm:text-2xl md:text-3xl leading-tight font-bold"
             style={{
-              color: 'var(--color-azure-11, #111827)',
-              fontFamily: 'Font 1',
-              letterSpacing: '0%',
-              verticalAlign: 'middle',
+              color: "var(--color-azure-11, #111827)",
+              fontFamily: "Font 1",
+              letterSpacing: "0%",
+              verticalAlign: "middle",
             }}
           >
             Application Analytics
           </h1>
-          <p className="text-gray-600 text-xs sm:text-sm">Insights for the G7 November Intake</p>
+          <p className="text-gray-600 text-xs sm:text-sm">
+            Insights for the G7 November Intake
+          </p>
         </div>
 
         <div className="w-full flex flex-col gap-3 mb-5">
@@ -150,9 +182,12 @@ const ApplicationAnalytics: NextPage = () => {
 
         <section className="grid grid-cols-1 gap-5 mb-6">
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Application Funnel</h3>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+              Application Funnel
+            </h3>
             <p className="text-gray-500 text-xs sm:text-sm mb-3">
-              This chart visualizes the applicant's journey from submission to acceptance.
+              This chart visualizes the applicant's journey from submission to
+              acceptance.
             </p>
             <div className="h-48 sm:h-60 w-full">
               <Bar data={barData} options={barOptions} />
@@ -160,16 +195,20 @@ const ApplicationAnalytics: NextPage = () => {
           </div>
 
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">University Distribution</h3>
-            <p className="text-gray-500 text-xs sm:text-sm mb-3">Breakdown of applicants by their university.</p>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+              University Distribution
+            </h3>
+            <p className="text-gray-500 text-xs sm:text-sm mb-3">
+              Breakdown of applicants by their university.
+            </p>
             <div className="h-48 sm:h-60">
               <Doughnut
                 data={universityData}
                 options={{
-                  cutout: '60%',
+                  cutout: "60%",
                   plugins: {
                     legend: {
-                      position: 'bottom',
+                      position: "bottom",
                       labels: {
                         usePointStyle: true,
                         font: { size: 10 },
@@ -182,8 +221,12 @@ const ApplicationAnalytics: NextPage = () => {
           </div>
 
           <div className="bg-white p-4 rounded-lg shadow-md">
-            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">Geographic Distribution</h3>
-            <p className="text-gray-500 text-xs sm:text-sm mb-3">Shows the number of applicants from each country.</p>
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
+              Geographic Distribution
+            </h3>
+            <p className="text-gray-500 text-xs sm:text-sm mb-3">
+              Shows the number of applicants from each country.
+            </p>
             <div className="h-40 sm:h-56 w-full">
               <Bar ref={geoChartRef} data={geoData} options={geoOptions} />
             </div>
